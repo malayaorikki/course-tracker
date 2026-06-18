@@ -210,14 +210,13 @@
 
     .term-section { display: flex; flex-direction: column; border-radius: 8px; padding: 12px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); transition: background 0.2s; }
     .term-section.is-past-term { opacity: 0.85; }
-    .term-section.is-current-term { }
     
     .term-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--color-border-tertiary); }
     .term-title-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; }
     
     .term-title-text { font-size: 14px; font-weight: 700; color: var(--color-text-primary); display: inline-flex; align-items: center; gap: 6px; }
     .term-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--color-border-tertiary); color: var(--color-text-secondary); }
-    .term-badge.current-badge { background: var(--color-text-info); color: #ffffff; }
+    .term-badge.current-badge { background: var(--text-info); color: #ffffff; }
     [data-theme="dark"] .term-badge.current-badge { color: #0b0f19; }
     .term-section.is-past-term .term-badge { background: var(--color-text-tertiary); color: var(--color-background-primary); }
     
@@ -259,17 +258,71 @@
     .course-prereqs { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; font-family: monospace; background: var(--color-prereq-bg); padding: 1px 4px; border-radius: 3px; width: fit-content; }
     .course-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; text-align: right; padding-right: 4px; white-space: nowrap; }
     
-    .status-btn { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); text-align: center; width: 100%; transition: background 0.1s; position: relative; z-index: 5; }
-    .status-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
-    .status-btn.passed-btn { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-success); }
-    .status-btn.taking-btn { border-color: var(--color-border-info); color: var(--color-text-info); background: transparent; }
-    .status-btn.retake-btn { border-color: var(--color-border-retake); color: var(--color-text-retake); background: var(--color-background-retake); }
-    .status-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--color-background-secondary); color: var(--color-text-tertiary); border-color: var(--color-border-tertiary); }
-    
-    .status-badge-pill { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: var(--border-radius-md); text-align: center; width: 100%; border: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); color: var(--color-text-secondary); display: inline-block; }
-    .status-badge-pill.passed-pill { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-success); }
-    .status-badge-pill.taking-pill { border-color: var(--color-border-info); color: var(--color-text-info); background: transparent; }
-    .status-badge-pill.retake-pill { border-color: var(--color-border-retake); color: var(--color-text-retake); background: var(--color-background-retake); }
+    /* ==========================================================================
+       UNIFORM ACTION COMPONENT STYLING (BUTTONS AND PASSIVE BADGES)
+       ========================================================================== */
+    .status-btn,
+    .status-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border-tertiary);
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Status Button Interactive Behaviors */
+    .status-btn {
+      cursor: pointer;
+      background: var(--color-background-primary);
+      color: var(--color-text-primary);
+      transition: background 0.1s, border-color 0.1s, color 0.1s;
+      position: relative;
+      z-index: 5;
+    }
+    .status-btn:hover:not(:disabled) {
+      background: var(--color-background-secondary);
+    }
+    .status-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--color-background-secondary);
+      color: var(--color-text-tertiary);
+      border-color: var(--color-border-tertiary);
+    }
+
+    /* Status Badge Pill Passive Default Behaviors */
+    .status-badge-pill {
+      background: var(--color-background-secondary);
+      color: var(--color-text-secondary);
+    }
+
+    /* Shared Normalized Alignment State modifiers */
+    .status-btn.passed-btn,
+    .status-badge-pill.passed-pill {
+      border-color: var(--color-border-success);
+      color: var(--color-text-success);
+      background: var(--color-background-success);
+    }
+    .status-btn.taking-btn,
+    .status-badge-pill.taking-pill {
+      border-color: var(--color-border-info);
+      color: var(--color-text-info);
+      background: transparent;
+    }
+    .status-btn.retake-btn,
+    .status-badge-pill.retake-pill {
+      border-color: var(--color-border-retake);
+      color: var(--color-text-retake);
+      background: var(--color-background-retake);
+    }
 
     .no-courses-msg { font-size: 13px; color: var(--color-text-secondary); padding: 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 1px dashed var(--color-border-tertiary); text-align: center; margin-top: 1rem; }
 
@@ -361,7 +414,7 @@
   <div id="terms"></div>
 
   <footer class="main-footer">
-    <button class="clear-btn" onclick="openResetModal()">Reset All Data</button>
+    <button class="clear-btn" id="open-reset-btn">Reset All Data</button>
   </footer>
 </div>
 
@@ -802,7 +855,6 @@ function computeRearrangedCourses() {
 function isPassed(code) { return status[code] === "passed"; }
 function isTaking(code) { return status[code] === "taking"; }
 function isRetake(code) { return status[code] === "retake"; }
-function isTakenOrPassed(code) { return isPassed(code) || isTaking(code) || isRetake(code); }
 
 function canTake(course, currentActiveSet) {
   for (const pr of course.prereqs) {
@@ -824,7 +876,7 @@ function isLockedByCoReq(course, currentActiveSet) {
   for (const pr of course.prereqs) {
     if (pr.type === "C") {
       const parent = currentActiveSet.find(c => c.code === pr.code);
-      if (parent && !canTake(parent, currentActiveSet) && status[parent.code] !== "taking" && status[parent.code] !== "passed") return true;
+      if (parent && !canTake(parent, currentActiveSet) && status[parent.code] !== "taking" && status[parent.code] !== "passed" && status[parent.code] !== "retake") return true;
     }
   }
   return false;
@@ -834,6 +886,28 @@ function isEffectivelyLocked(course, currentActiveSet) {
   if (!canTake(course, currentActiveSet)) return true;
   if (isLockedByCoReq(course, currentActiveSet)) return true;
   return false;
+}
+
+function enforcePrerequisites() {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const course of INITIAL_COURSES) {
+      const cur = status[course.code];
+      if (cur !== "none" && cur !== "locked") {
+        let prereqsMet = true;
+        for (const pr of course.prereqs) {
+          if (pr.type === "H" && !isPassed(pr.code)) prereqsMet = false;
+          if (pr.type === "S" && !(isPassed(pr.code) || isRetake(pr.code))) prereqsMet = false;
+          if (pr.type === "C" && status[pr.code] !== "passed" && status[pr.code] !== "retake" && status[pr.code] !== "taking") prereqsMet = false;
+        }
+        if (!prereqsMet) {
+          status[course.code] = "none";
+          changed = true;
+        }
+      }
+    }
+  }
 }
 
 function cycleStatus(course, currentActiveSet) {
@@ -937,6 +1011,8 @@ document.getElementById("ge-modal").addEventListener("click", (e) => {
   if (e.target.id === "ge-modal") closeGeModal();
 });
 
+// Event Binding Layer for Reset Operations
+document.getElementById("open-reset-btn").addEventListener("click", openResetModal);
 document.getElementById("reset-modal-close").addEventListener("click", closeResetModal);
 document.getElementById("reset-modal-cancel").addEventListener("click", closeResetModal);
 document.getElementById("reset-modal-confirm").addEventListener("click", confirmResetTracker);
@@ -950,6 +1026,9 @@ function prereqLabel(prereqs) {
 }
 
 function render() {
+  enforcePrerequisites();
+  saveState();
+
   let activeCourseSet = (activeTab === "revised") ? computeRearrangedCourses() : JSON.parse(JSON.stringify(INITIAL_COURSES));
 
   let terms = [...new Set(activeCourseSet.map(c => c.term))].sort((a,b)=>a-b);
@@ -975,7 +1054,6 @@ function render() {
   terms.forEach(t => {
     let courses = activeCourseSet.filter(c => c.term === t);
     
-    // UPDATED: Now filters both "taking" and "retake" status courses for the Currently Taking tab
     if (activeTab === "taking") {
       courses = courses.filter(c => status[c.code] === "taking" || status[c.code] === "retake");
     }
