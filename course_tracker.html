@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DLSU CpE Course Tracker & Rearranger</title>
+  <style>
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --color-body-bg: #fafafa;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f8f9fa;
+      --color-background-success: #f0fdf4;
+      --color-border-tertiary: #e5e7eb;
+      --color-border-success: #bbf7d0;
+      --color-border-info: #3b82f6;
+      --color-text-primary: #111827;
+      --color-text-secondary: #4b5563;
+      --color-text-tertiary: #9ca3af;
+      --color-text-success: #16a34a;
+      --color-text-info: #2563eb;
+      --color-text-danger: #dc2626;
+      --border-radius-md: 6px;
+      --color-card-shadow: rgba(0,0,0,0.05);
+      --color-prereq-bg: #f3f4f6;
+    }
+
+    [data-theme="dark"] {
+      --color-body-bg: #0b0f19;
+      --color-background-primary: #111827;
+      --color-background-secondary: #1f2937;
+      --color-background-success: #062f1d;
+      --color-border-tertiary: #374151;
+      --color-border-success: #166534;
+      --color-border-info: #60a5fa;
+      --color-text-primary: #f9fafb;
+      --color-text-secondary: #9ca3af;
+      --color-text-tertiary: #6b7280;
+      --color-text-success: #4ade80;
+      --color-text-info: #60a5fa;
+      --color-text-danger: #f87171;
+      --color-card-shadow: rgba(0, 0, 0, 0.4);
+      --color-prereq-bg: #374151;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--color-body-bg); color: var(--color-text-primary); padding: 2rem 1rem; transition: background 0.2s, color 0.2s; }
+    
+    .container { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px var(--color-card-shadow); transition: background 0.2s, box-shadow 0.2s; }
+    
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--color-text-primary);
+    }
+
+    .brand-section .sub-title {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    .header-utilities {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stats-container {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .stats-container .stat-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--color-background-secondary);
+      border: 1px solid var(--color-border-tertiary);
+      color: var(--color-text-secondary);
+    }
+
+    .stats-container .stat-pill span {
+      color: var(--color-text-primary);
+      font-weight: 700;
+    }
+
+    .theme-toggle-btn { font-size: 16px; width: 34px; height: 34px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-secondary); color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; transition: background 0.1s, border-color 0.1s; }
+    .theme-toggle-btn:hover { background: var(--color-border-tertiary); }
+
+    /* Navigation row container containing tabs and aligned tracker */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Modern Navigation Tabs (Segmented Control) */
+    .tabs-container {
+      display: inline-flex;
+      background: var(--color-background-secondary);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border-tertiary);
+      gap: 4px;
+      width: 100%;
+      max-width: 520px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: var(--color-text-primary);
+      background: rgba(0, 0, 0, 0.03);
+    }
+    [data-theme="dark"] .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .tab-btn.active {
+      color: var(--color-text-info);
+      background: var(--color-background-primary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="dark"] .tab-btn.active {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    select.term-select {
+      padding: 6px 28px 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--color-border-tertiary);
+      background: var(--color-background-secondary);
+      color: var(--color-text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='3'><path stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .clear-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; border: 1px solid transparent; cursor: pointer; background: transparent; color: var(--color-text-tertiary); transition: all 0.1s; }
+    .clear-btn:hover { color: #b91c1c; background: #fef2f2; border-color: #fca5a5; }
+    [data-theme="dark"] .clear-btn:hover { background: #451a1a; color: #fca5a5; border-color: #7f1d1d; }
+
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .legend-dot.passed { background: var(--color-background-success); border: 1px solid var(--color-border-success); }
+    .legend-dot.taking { background: var(--color-background-primary); border: 2px solid var(--color-border-info); }
+    .legend-dot.locked { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); opacity: 0.6; }
+    .legend-dot.available { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); }
+    
+    .year-container { margin-bottom: 2rem; }
+    .year-title-banner { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.75rem; border-bottom: 2px solid var(--color-border-tertiary); padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .year-terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; align-items: start; }
+    
+    /* Modified layout style for specific tabs to keep column proportions but centered middle */
+    .year-terms-grid.tabs-center-layout {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      justify-content: center;
+    }
+
+    .term-section { display: flex; flex-direction: column; border-radius: 8px; padding: 12px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); transition: background 0.2s; }
+    .term-section.is-past-term { opacity: 0.85; }
+    
+    .term-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--color-border-tertiary); }
+    .term-title-row { display: grid; grid-template-columns: 1fr 60px 100px; align-items: center; gap: 8px; }
+    
+    .term-title-text { font-size: 14px; font-weight: 700; color: var(--color-text-primary); display: inline-flex; align-items: center; gap: 6px; }
+    .term-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--color-border-tertiary); color: var(--color-text-secondary); }
+    .term-section.is-current-term .term-badge { background: var(--color-text-info); color: #fff; }
+    .term-section.is-past-term .term-badge { background: var(--color-text-tertiary); color: var(--color-background-primary); }
+    
+    .term-action-btn { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.1s ease; background: var(--color-background-primary); text-align: center; width: 100%; border: 1px solid var(--color-border-tertiary); }
+    .term-action-btn.take-all { border-color: var(--color-border-info); color: var(--color-text-info); }
+    .term-action-btn.take-all:hover { background: var(--color-border-info); color: #fff; }
+    
+    .term-footer-actions { display: flex; justify-content: center; width: 100%; margin-top: 24px; padding-top: 12px; border-top: 1px dashed var(--color-border-tertiary); }
+    .term-action-btn.pass-all { border-color: var(--color-border-success); color: var(--color-text-success); max-width: 150px; }
+    .term-action-btn.pass-all:hover { background: var(--color-border-success); color: #fff; }
+    
+    [data-theme="dark"] .term-action-btn:hover { color: var(--background-primary) !important; }
+
+    .term-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
+    .term-units.warning { color: var(--color-text-danger); font-weight: 700; }
+    
+    .course-grid { display: flex; flex-direction: column; gap: 6px; }
+    .course-row { display: grid; grid-template-columns: 1fr 60px 100px; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); transition: all 0.15s ease; }
+    .course-row.passed { background: var(--color-background-success); border-color: var(--color-border-success); }
+    .course-row.locked { background: var(--color-background-secondary); opacity: 0.55; }
+    .course-row.taking { border-color: var(--color-border-info); box-shadow: 0 0 0 1px var(--color-border-info); }
+    
+    .course-row.lcc-card { cursor: pointer; }
+    .course-row.lcc-card:hover { border-color: var(--color-border-info); background: var(--color-background-secondary); box-shadow: 0 2px 6px var(--card-shadow); }
+    .course-row.lcc-card.passed:hover { background: var(--color-background-success); border-color: var(--text-success); }
+    
+    .course-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .course-code { font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+    .course-row.passed .course-code { color: var(--color-text-success); }
+    .course-row.locked .course-code { color: var(--color-text-secondary); }
+    
+    .course-title-text { font-size: 11px; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .course-prereqs { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; font-family: monospace; background: var(--color-prereq-bg); padding: 1px 4px; border-radius: 3px; width: fit-content; }
+    .course-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; text-align: right; padding-right: 4px; white-space: nowrap; }
+    
+    .status-btn { font-size: 11px; font-weight: 500; padding: 4px 8px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); text-align: center; width: 100%; transition: background 0.1s; position: relative; z-index: 5; }
+    .status-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+    .status-btn.passed-btn { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-primary); }
+    .status-btn.taking-btn { border-color: var(--color-border-info); color: var(--color-text-info); background: var(--color-background-primary); }
+    .status-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    
+    .no-courses-msg { font-size: 13px; color: var(--color-text-secondary); padding: 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 1px dashed var(--color-border-tertiary); text-align: center; margin-top: 1rem; }
+
+    .main-footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border-tertiary); display: flex; justify-content: center; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: var(--color-background-primary); border-radius: 8px; max-width: 440px; width: 100%; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid var(--color-border-tertiary); display: flex; flex-direction: column; gap: 12px; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border-tertiary); padding-bottom: 8px; }
+    .modal-title { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+    .modal-close { background: none; border: none; font-size: 18px; color: var(--color-text-secondary); cursor: pointer; }
+    .modal-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; }
+    .modal-item { padding: 8px 12px; font-size: 13px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; text-align: left; color: var(--color-text-primary); transition: background 0.1s; font-weight: 500; }
+    .modal-item:hover { background: var(--color-border-tertiary); }
+    .modal-unassign-btn { font-size: 12px; color: var(--color-text-danger); background: none; border: none; cursor: pointer; text-align: center; margin-top: 4px; font-weight: 500; padding: 4px; }
+    .modal-unassign-btn:hover { text-decoration: underline; }
+
+    .modal-footer-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .modal-footer-btns .status-btn { width: auto; padding: 6px 14px; }
+    .modal-footer-btns .btn-danger { background: var(--color-text-danger); color: #fff; border-color: var(--color-text-danger); }
+    .modal-footer-btns .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+
+    @media (max-width: 768px) {
+      .main-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .header-utilities {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .nav-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .tabs-container {
+        max-width: 100%;
+      }
+      .tab-btn {
+        padding: 8px 6px;
+        font-size: 12px;
+      }
+      .control-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header class="main-header">
+    <div class="brand-section">
+      <h2>BS Computer Engineering</h2>
+      <p class="sub-title">Flowchart Course Tracker & Rearranger</p>
+    </div>
+    
+    <div class="header-utilities">
+      <div class="stats-container" id="stats-pills"></div>
+      <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Light/Dark Mode">🌓</button>
+    </div>
+  </header>
+
+  <div class="nav-row">
+    <nav class="tabs-container">
+      <button class="tab-btn active" id="tab-main" onclick="switchTab('main')">Main Flowchart</button>
+      <button class="tab-btn" id="tab-taking" onclick="switchTab('taking')">Currently Taking</button>
+      <button class="tab-btn" id="tab-revised" onclick="switchTab('revised')">Revised Flowchart</button>
+    </nav>
+
+    <div class="control-group">
+      <span style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary);">Current Term Tracker:</span>
+      <div class="select-wrapper" style="position: relative;">
+        <select id="current-term-select" class="term-select"></select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="legend" id="legend-container">
+    <div class="legend-item"><div class="legend-dot passed"></div>Passed</div>
+    <div class="legend-item"><div class="legend-dot taking"></div>Currently taking</div>
+    <div class="legend-item"><div class="legend-dot available"></div>Available</div>
+    <div class="legend-item"><div class="legend-dot locked"></div>Locked (prereq missing)</div>
+  </div>
+  
+  <div id="terms"></div>
+
+  <footer class="main-footer">
+    <button class="clear-btn" onclick="openResetModal()">Reset All Data</button>
+  </footer>
+</div>
+
+<div class="modal-overlay" id="ge-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="ge-modal-title">Assign GE Course</div>
+      <button class="modal-close" id="ge-modal-close">&times;</button>
+    </div>
+    <div class="modal-list" id="ge-modal-list"></div>
+    <button class="modal-unassign-btn" id="ge-modal-unassign">Clear Course Assignment</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Reset Tracker Data</div>
+      <button class="modal-close" id="reset-modal-close">&times;</button>
+    </div>
+    <div style="font-size: 13px; color: var(--color-text-secondary); margin: 6px 0 12px 0; line-height: 1.5;">
+      Are you sure you want to clear all completion metrics, customized layout structures, and reset back to default? This action cannot be undone.
+    </div>
+    <div class="modal-footer-btns">
+      <button class="status-btn" id="reset-modal-cancel">Cancel</button>
+      <button class="status-btn btn-danger" id="reset-modal-confirm">Reset Everything</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const INITIAL_COURSES = [
+  {term:1,code:"NSTP101",title:"National Service Training Program - General Orientation",units:0,prereqs:[]},
+  {term:1,code:"FNDMATH",title:"Foundation in Math",units:5,prereqs:[]},
+  {term:1,code:"BASCHEM",title:"Basic Chemistry",units:3,prereqs:[]},
+  {term:1,code:"BASPHYS",title:"Basic Physics",units:3,prereqs:[]},
+  {term:1,code:"FNDSTAT",title:"Foundation in Statistics",units:3,prereqs:[]},
+  {term:1,code:"LCC01",title:"Lasallian Core Curriculum 01",units:3,prereqs:[]},
+  {term:2,code:"NSTPCW1",title:"National Service Training Program 1",units:0,prereqs:[]},
+  {term:2,code:"LCC02",title:"Lasallian Core Curriculum 02",units:3,prereqs:[]},
+  {term:2,code:"CALENG1",title:"Differential Calculus",units:3,prereqs:[{code:"FNDMATH",type:"H"}]},
+  {term:2,code:"COEDISC",title:"Computer Engineering as a Discipline",units:1,prereqs:[]},
+  {term:2,code:"PROLOGI",title:"Programming Logic and Design Lecture",units:2,prereqs:[]},
+  {term:2,code:"LBYCPA1",title:"Programming Logic and Design Laboratory",units:2,prereqs:[{code:"PROLOGI",type:"C"}]},
+  {term:2,code:"LBYEC2A",title:"Computer Fundamentals and Programming 1",units:1,prereqs:[]},
+  {term:2,code:"LCC03",title:"Lasallian Core Curriculum 03",units:3,prereqs:[]},
+  {term:2,code:"LCC04",title:"Lasallian Core Curriculum 04",units:3,prereqs:[]},
+  {term:3,code:"NSTPCW2",title:"National Service Training Program 2",units:0,prereqs:[{code:"NSTPCW1",type:"H"}]},
+  {term:3,code:"LCLSONE",title:"Lasallian Studies 1",units:0,prereqs:[]},
+  {term:3,code:"SAS1000",title:"Students Affairs Service 1000",units:0,prereqs:[]},
+  {term:3,code:"LASARE1",title:"Lasallian Recollection 1",units:0,prereqs:[]},
+  {term:3,code:"ENGPHYS",title:"Physics for Engineers",units:3,prereqs:[{code:"CALENG1",type:"S"},{code:"BASPHYS",type:"H"}]},
+  {term:3,code:"LBYPH1A",title:"Physics for Engineers Laboratory",units:1,prereqs:[{code:"ENGPHYS",type:"C"}]},
+  {term:3,code:"CALENG2",title:"Integral Calculus",units:3,prereqs:[{code:"CALENG1",type:"H"}]},
+  {term:3,code:"LBYEC2B",title:"Computer Fundamentals and Programming 2",units:1,prereqs:[{code:"LBYEC2A",type:"H"}]},
+  {term:3,code:"LBYCPEI",title:"Object Oriented Programming Laboratory",units:2,prereqs:[{code:"LBYCPA1",type:"H"}]},
+  {term:3,code:"LCC05",title:"Lasallian Core Curriculum 05",units:3,prereqs:[]},
+  {term:3,code:"LCC06",title:"Lasallian Core Curriculum 06",units:3,prereqs:[]},
+  {term:3,code:"LCC07",title:"Lasallian Core Curriculum 07",units:3,prereqs:[]},
+  {term:4,code:"CALENG3",title:"Differential Equations",units:3,prereqs:[{code:"CALENG2",type:"H"}]},
+  {term:4,code:"DATSRAL",title:"Data Structures and Algorithms Lecture",units:1,prereqs:[{code:"LBYCPEI",type:"H"}]},
+  {term:4,code:"LBYCPA2",title:"Data Structures and Algorithms Laboratory",units:2,prereqs:[{code:"DATSRAL",type:"C"}]},
+  {term:4,code:"DISCRMT",title:"Discrete Mathematics",units:3,prereqs:[{code:"CALENG1",type:"H"}]},
+  {term:4,code:"FUNDCKT",title:"Fundamentals of Electrical Circuits Lecture",units:3,prereqs:[{code:"ENGPHYS",type:"H"}]},
+  {term:4,code:"LBYEC2M",title:"Fundamentals of Electrical Circuits Lab",units:1,prereqs:[{code:"FUNDCKT",type:"C"}]},
+  {term:4,code:"ENGCHEM",title:"Chemistry for Engineers",units:3,prereqs:[{code:"BASCHEM",type:"H"}]},
+  {term:4,code:"LBBCH1A",title:"Chemistry for Engineers Laboratory",units:1,prereqs:[{code:"ENGCHEM",type:"C"}]},
+  {term:4,code:"PE1CRDO",title:"Cardio Fitness",units:2,prereqs:[]},
+  {term:5,code:"ENGDATA",title:"Engineering Data Analysis",units:3,prereqs:[{code:"CALENG2",type:"S"},{code:"FNDSTAT",type:"H"}]},
+  {term:5,code:"NUMMETS",title:"Numerical Methods",units:3,prereqs:[{code:"CALENG3",type:"H"}]},
+  {term:5,code:"FUNDLEC",title:"Fundamentals of Electronic Circuits Lecture",units:3,prereqs:[{code:"FUNDCKT",type:"H"}]},
+  {term:5,code:"LBYCPC2",title:"Fundamentals of Electronic Circuits Laboratory",units:1,prereqs:[{code:"FUNDLEC",type:"C"}]},
+  {term:5,code:"SOFDESG",title:"Software Design Lecture",units:3,prereqs:[{code:"LBYCPA2",type:"H"}]},
+  {term:5,code:"LBYCPD2",title:"Software Design Laboratory",units:1,prereqs:[{code:"SOFDESG",type:"C"}]},
+  {term:5,code:"ENGENVI",title:"Environmental Science and Engineering",units:3,prereqs:[{code:"ENGCHEM",type:"H"}]},
+  {term:5,code:"PE2FTEX",title:"Functional Exercise",units:2,prereqs:[{code:"PE1CRDO",type:"H"}]},
+  {term:5,code:"SAS2000",title:"Student Affairs Series 2",units:0,prereqs:[]},
+  {term:6,code:"LCLSTWO",title:"Lasallian Studies 2",units:0,prereqs:[]},
+  {term:6,code:"LASARE2",title:"Lasallian Recollection 2",units:0,prereqs:[]},
+  {term:6,code:"MXSIGFN",title:"Fundamentals of Mixed Signals and Sensors",units:3,prereqs:[{code:"FUNDLEC",type:"H"}]},
+  {term:6,code:"LOGDSGN",title:"Logic Circuits and Design Lecture",units:3,prereqs:[{code:"FUNDLEC",type:"H"}]},
+  {term:6,code:"LBYCPG4",title:"Logic Circuits and Design Laboratory",units:1,prereqs:[{code:"LOGDSGN",type:"C"}]},
+  {term:6,code:"FDCNSYS",title:"Feedback and Control Systems",units:3,prereqs:[{code:"NUMMETS",type:"H"},{code:"FUNDCKT",type:"H"}]},
+  {term:6,code:"LBYCPC3",title:"Feedback and Control System Laboratory",units:1,prereqs:[{code:"FDCNSYS",type:"C"}]},
+  {term:6,code:"LBYME1C",title:"Computer-Aided Drafting (CAD) for ECE and CpE",units:1,prereqs:[]},
+  {term:6,code:"LCC08",title:"Lasallian Core Curriculum 08",units:3,prereqs:[]},
+  {term:6,code:"PETHREE",title:"PE 3",units:2,prereqs:[{code:"PE1CRDO",type:"H"},{code:"PE2FTEX",type:"H"}]},
+  {term:7,code:"LCC09",title:"Lasallian Core Curriculum 09",units:3,prereqs:[]},
+  {term:7,code:"MICPROS",title:"Microprocessors Lecture",units:3,prereqs:[{code:"LOGDSGN",type:"H"}]},
+  {term:7,code:"LBYCPA3",title:"Microprocessors Laboratory",units:1,prereqs:[{code:"MICPROS",type:"C"}]},
+  {term:7,code:"LBYCPB3",title:"Computer Engineering Drafting and Design Laboratory",units:1,prereqs:[{code:"LOGDSGN",type:"H"}]},
+  {term:7,code:"LBYEC3B",title:"Intelligent Systems for Engineering",units:1,prereqs:[{code:"LBYEC2A",type:"H"},{code:"ENGDATA",type:"H"}]},
+  {term:7,code:"LBYCPF2",title:"Introduction to HDL Laboratory",units:1,prereqs:[{code:"LBYCPA1",type:"H"},{code:"FUNDLEC",type:"H"}]},
+  {term:7,code:"DIGDACM",title:"Data and Digital Communications",units:3,prereqs:[{code:"FUNDLEC",type:"H"}]},
+  {term:7,code:"PETHFOUR",title:"PE 4",units:2,prereqs:[{code:"PE1CRDO",type:"H"},{code:"PE2FTEX",type:"H"},{code:"PETHREE",type:"H"}]},
+  {term:7,code:"LBYCPG2",title:"Basic Computer Systems Administration",units:1,prereqs:[]},
+  {term:8,code:"CSYSARC",title:"Computer Architecture and Organization Lecture",units:3,prereqs:[{code:"MICPROS",type:"H"}]},
+  {term:8,code:"LBYCPD3",title:"Computer Architecture and Organization Laboratory",units:1,prereqs:[{code:"CSYSARC",type:"C"}]},
+  {term:8,code:"EMBDSYS",title:"Embedded Systems Lecture",units:3,prereqs:[{code:"MICPROS",type:"H"}]},
+  {term:8,code:"LBYCPM3",title:"Embedded Systems Laboratory",units:1,prereqs:[{code:"EMBDSYS",type:"C"}]},
+  {term:8,code:"LBYCPG3",title:"Online Technologies Laboratory",units:1,prereqs:[]},
+  {term:8,code:"LCC10",title:"Lasallian Core Curriculum 10",units:3,prereqs:[]},
+  {term:8,code:"REMETHS",title:"Methods of Research for CpE",units:3,prereqs:[{code:"ENGDATA",type:"H"},{code:"LOGDSGN",type:"H"}]},
+  {term:8,code:"OPESSYS",title:"Operating Systems Lecture",units:3,prereqs:[{code:"LBYCPA2",type:"H"}]},
+  {term:8,code:"LBYCPO1",title:"Operating Systems Laboratory",units:1,prereqs:[{code:"OPESSYS",type:"C"}]},
+  {term:9,code:"LCLSTRI",title:"Lasallian Studies 3",units:0,prereqs:[]},
+  {term:9,code:"LCC11",title:"Lasallian Core Curriculum 11",units:3,prereqs:[]},
+  {term:9,code:"LASARE3",title:"Lasallian Recollection 3",units:0,prereqs:[]},
+  {term:9,code:"DSIGPRO",title:"Digital Signal Processing Lecture",units:3,prereqs:[{code:"FDCNSYS",type:"H"},{code:"EMBDSYS",type:"S"}]},
+  {term:9,code:"LBYCPA4",title:"Digital Signal Processing Laboratory",units:1,prereqs:[{code:"DSIGPRO",type:"C"}]},
+  {term:9,code:"OCHESAF",title:"Basic Occupational Health and Safety",units:3,prereqs:[{code:"EMBDSYS",type:"H"}]},
+  {term:9,code:"THSCP4A",title:"CpE Practice and Design 1",units:1,prereqs:[{code:"EMBDSYS",type:"H"},{code:"REMETHS",type:"H"}]},
+  {term:9,code:"CPEPRAC",title:"CpE Laws and Professional Practice",units:2,prereqs:[{code:"EMBDSYS",type:"H"}]},
+  {term:9,code:"CPECOG1",title:"CpE Elective 1 Lecture",units:2,prereqs:[{code:"EMBDSYS",type:"H"},{code:"THSCP4A",type:"C"}]},
+  {term:9,code:"LBYCPF3",title:"CpE Elective 1 Laboratory",units:1,prereqs:[{code:"CPECOG1",type:"C"}]},
+  {term:10,code:"LCC12",title:"Lasallian Core Curriculum 12",units:3,prereqs:[]},
+  {term:10,code:"EMERTEC",title:"Emerging Technologies in CpE",units:3,prereqs:[{code:"EMBDSYS",type:"H"}]},
+  {term:10,code:"THSCP4B",title:"CpE Practice and Design 2",units:1,prereqs:[{code:"THSCP4A",type:"H"}]},
+  {term:10,code:"ENGTREP",title:"Technopreneurship 101",units:3,prereqs:[]},
+  {term:10,code:"CONETSC",title:"Computer Networks and Security Lecture",units:3,prereqs:[{code:"DIGDACM",type:"H"}]},
+  {term:10,code:"LBYCPB4",title:"Computer Networks and Security Laboratory",units:1,prereqs:[{code:"CONETSC",type:"C"}]},
+  {term:10,code:"CPECAPS",title:"Operational Technologies",units:1,prereqs:[{code:"LBYCPB4",type:"C"},{code:"LBYCPH3",type:"C"}]},
+  {term:10,code:"CPECOG2",title:"CpE Elective 2 Lecture",units:2,prereqs:[{code:"THSCP4A",type:"S"}]},
+  {term:10,code:"LBYCPH3",title:"CpE Elective 2 Laboratory",units:1,prereqs:[{code:"CPECOG2",type:"C"}]},
+  {term:10,code:"SAS3000",title:"Student Affairs Series 3",units:0,prereqs:[{code:"SAS2000",type:"H"}]},
+  {term:11,code:"PRCGECP",title:"Practicum for CpE",units:3,prereqs:[{code:"REMETHS",type:"H"}]},
+  {term:12,code:"LCC13",title:"Lasallian Core Curriculum 13",units:3,prereqs:[]},
+  {term:12,code:"LCC14",title:"Lasallian Core Curriculum 14",units:3,prereqs:[]},
+  {term:12,code:"THSCP4C",title:"CpE Practice and Design 3",units:1,prereqs:[{code:"THSCP4B",type:"H"}]},
+  {term:12,code:"CPECOG3",title:"CpE Elective 3 Lecture",units:2,prereqs:[{code:"THSCP4A",type:"S"}]},
+  {term:12,code:"LBYCPC4",title:"CpE Elective 3 Laboratory",units:1,prereqs:[{code:"CPECOG3",type:"C"}]},
+  {term:12,code:"CPETRIP",title:"Seminars and Field Trips for CpE",units:1,prereqs:[{code:"EMBDSYS",type:"H"},{code:"CPECAPS",type:"H"}]},
+  {term:12,code:"ECNOMIC",title:"Engineering Economics for CpE",units:3,prereqs:[{code:"CALENG1",type:"S"}]},
+  {term:12,code:"ENGMANA",title:"Engineering Management",units:2,prereqs:[{code:"CALENG1",type:"S"}]},
+  {term:12,code:"LCC15",title:"Lasallian Core Curriculum 15",units:3,prereqs:[]},
+];
+
+const LCC_OPTIONS = [
+  "GELITPH", "LCFILIA", "LCFILIB", "GEARTAP", "GEETHIC", "GEMATMW", 
+  "GEPCOMM", "GERIZAL", "GERPHIS", "GESTSOC", "GEUSELF", "GEWORLD", 
+  "LCASEAN", "LCENWRD", "LCFAITH"
+];
+
+const STORAGE_KEY = "cpe_tracker_status";
+const THEME_KEY = "cpe_tracker_theme";
+const LCC_MAPPING_KEY = "cpe_tracker_lcc_mappings";
+const CURRENT_TERM_KEY = "cpe_tracker_current_term";
+const CURRENT_TAB_KEY = "cpe_tracker_current_tab";
+const MAX_UNITS_PER_TERM = 21;
+
+let ALL_COURSES = [];
+let status = {};
+let lccMappings = {}; 
+let currentTerm = 1; 
+let activeTab = "main"; // "main", "taking", "revised"
+let currentActiveLccCode = null;
+
+const TERM_NAMES = {
+  1:"Term 1",2:"Term 2",3:"Term 3",
+  4:"Term 4",5:"Term 5",6:"Term 6",
+  7:"Term 7",8:"Term 8",9:"Term 9",
+  10:"Term 10",11:"Term 11",12:"Term 12"
+};
+
+function getTermLabel(t) {
+  return TERM_NAMES[t] || `Term ${t}`;
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+}
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  if (currentTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem(THEME_KEY, "light");
+  } else {
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem(THEME_KEY, "dark");
+  }
+});
+
+function switchTab(tabId) {
+  activeTab = tabId;
+  localStorage.setItem(CURRENT_TAB_KEY, tabId);
+  
+  // Highlight tab button
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+  
+  // Adjust helper items
+  if (tabId === 'taking') {
+    document.getElementById("legend-container").style.display = "none";
+  } else {
+    document.getElementById("legend-container").style.display = "flex";
+  }
+
+  render();
+}
+
+function loadSavedData() {
+  const savedStatus = localStorage.getItem(STORAGE_KEY);
+  const savedMappings = localStorage.getItem(LCC_MAPPING_KEY);
+  const savedTerm = localStorage.getItem(CURRENT_TERM_KEY);
+  const savedTab = localStorage.getItem(CURRENT_TAB_KEY);
+  
+  if (savedStatus) {
+    try {
+      status = JSON.parse(savedStatus);
+    } catch(e) {
+      initializeEmptyStatus();
+    }
+  } else {
+    initializeEmptyStatus();
+  }
+
+  if (savedMappings) { try { lccMappings = JSON.parse(savedMappings); } catch(e) { lccMappings = {}; } } else { lccMappings = {}; }
+  if (savedTerm) { currentTerm = parseInt(savedTerm, 10) || 1; } else { currentTerm = 1; }
+  if (savedTab) { activeTab = savedTab; }
+
+  populateTermSelectors();
+  switchTab(activeTab);
+}
+
+function initializeEmptyStatus() {
+  status = {};
+  INITIAL_COURSES.forEach(c => status[c.code] = "none");
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(status));
+  localStorage.setItem(LCC_MAPPING_KEY, JSON.stringify(lccMappings));
+  localStorage.setItem(CURRENT_TERM_KEY, currentTerm.toString());
+}
+
+function openResetModal() {
+  document.getElementById("reset-modal").classList.add("active");
+}
+
+function closeResetModal() {
+  document.getElementById("reset-modal").classList.remove("active");
+}
+
+function confirmResetTracker() {
+  initializeEmptyStatus();
+  lccMappings = {};
+  currentTerm = 1;
+  activeTab = "main";
+  saveState();
+  populateTermSelectors();
+  switchTab("main");
+  closeResetModal();
+  
+  // Smooth scroll back to the top of the main page layout
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function populateTermSelectors() {
+  const select = document.getElementById("current-term-select");
+  select.innerHTML = "";
+  for (let i = 1; i <= 12; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `Term ${i}`;
+    if (i === currentTerm) opt.selected = true;
+    select.appendChild(opt);
+  }
+}
+
+document.getElementById("current-term-select").addEventListener("change", (e) => {
+  currentTerm = parseInt(e.target.value, 10);
+  saveState();
+  render();
+});
+
+/* Core Scheduler algorithm calculating shift patterns */
+function computeRearrangedCourses() {
+  let workingCourses = JSON.parse(JSON.stringify(INITIAL_COURSES));
+  let changesMade = true;
+  let iterations = 0;
+  const maxSafeIterations = 1000; 
+
+  while (changesMade && iterations < maxSafeIterations) {
+    changesMade = false;
+    iterations++;
+
+    for (let i = 0; i < workingCourses.length; i++) {
+      const course = workingCourses[i];
+      if (course.term < currentTerm && status[course.code] !== "passed") {
+        course.term = currentTerm;
+        changesMade = true;
+      }
+    }
+
+    for (let i = 0; i < workingCourses.length; i++) {
+      const course = workingCourses[i];
+      for (const pr of course.prereqs) {
+        const pCourse = workingCourses.find(c => c.code === pr.code);
+        if (!pCourse) continue;
+
+        if ((pr.type === "H" || pr.type === "S") && course.term <= pCourse.term) {
+          course.term = pCourse.term + 1;
+          changesMade = true;
+        }
+        if (pr.type === "C" && course.term !== pCourse.term) {
+          const maxTerm = Math.max(course.term, pCourse.term);
+          if (course.term !== maxTerm) { course.term = maxTerm; changesMade = true; }
+          if (pCourse.term !== maxTerm) { pCourse.term = maxTerm; changesMade = true; }
+        }
+      }
+    }
+
+    const practicumCourse = workingCourses.find(c => c.code === "PRCGECP");
+    if (practicumCourse) {
+      const pracTerm = practicumCourse.term;
+      for (let i = 0; i < workingCourses.length; i++) {
+        const course = workingCourses[i];
+        if (course.code !== "PRCGECP" && course.term === pracTerm) {
+          course.term = pracTerm + 1;
+          changesMade = true;
+        }
+      }
+    }
+
+    if (changesMade) continue;
+
+    const termList = [...new Set(workingCourses.map(c => c.term))].sort((a, b) => a - b);
+    for (const t of termList) {
+      if (t < currentTerm) continue;
+
+      const termCourses = workingCourses.filter(c => c.term === t);
+      const totalUnits = termCourses.reduce((sum, c) => sum + c.units, 0);
+
+      if (totalUnits > MAX_UNITS_PER_TERM) {
+        const blockingPrereqs = new Set();
+        termCourses.forEach(c => {
+          c.prereqs.forEach(p => {
+            if (termCourses.some(tc => tc.code === p.code)) {
+              blockingPrereqs.add(p.code);
+            }
+          });
+        });
+
+        const candidates = termCourses.filter(c => status[c.code] !== "passed");
+        
+        candidates.sort((a, b) => {
+          const aIsPrereq = blockingPrereqs.has(a.code) ? 1 : 0;
+          const bIsPrereq = blockingPrereqs.has(b.code) ? 1 : 0;
+          if (aIsPrereq !== bIsPrereq) return aIsPrereq - bIsPrereq;
+
+          const aOrigTerm = INITIAL_COURSES.find(orig => orig.code === a.code).term;
+          const bOrigTerm = INITIAL_COURSES.find(orig => orig.code === b.code).term;
+          if (aOrigTerm !== bOrigTerm) return bOrigTerm - aOrigTerm;
+
+          return b.units - a.units;
+        });
+
+        if (candidates.length > 0) {
+          candidates[0].term = t + 1;
+          changesMade = true;
+          break; 
+        }
+      }
+    }
+  }
+  return workingCourses;
+}
+
+function isPassed(code) { return status[code] === "passed"; }
+function isTaking(code) { return status[code] === "taking"; }
+function isTakenOrPassed(code) { return isPassed(code) || isTaking(code); }
+
+function canTake(course, currentActiveSet) {
+  for (const pr of course.prereqs) {
+    if (pr.type === "H" && !isPassed(pr.code)) return false;
+    if (pr.type === "S" && !isTakenOrPassed(pr.code)) return false;
+  }
+  return true;
+}
+
+function isLockedByCoReq(course, currentActiveSet) {
+  for (const pr of course.prereqs) {
+    if (pr.type === "C") {
+      const parent = currentActiveSet.find(c => c.code === pr.code);
+      if (parent && !canTake(parent, currentActiveSet) && status[parent.code] !== "taking" && status[parent.code] !== "passed") return true;
+    }
+  }
+  return false;
+}
+
+function isEffectivelyLocked(course, currentActiveSet) {
+  if (!canTake(course, currentActiveSet)) return true;
+  if (isLockedByCoReq(course, currentActiveSet)) return true;
+  return false;
+}
+
+function cycleStatus(course, currentActiveSet) {
+  const cur = status[course.code];
+  if (cur === "none" || cur === "locked") {
+    if (isEffectivelyLocked(course, currentActiveSet)) return;
+    status[course.code] = "taking";
+    
+    const coReqs = currentActiveSet.filter(c => c.prereqs.some(p => p.type === "C" && p.code === course.code));
+    coReqs.forEach(c => {
+      if (status[c.code] === "none" && canTake(c, currentActiveSet) && !isLockedByCoReq(c, currentActiveSet)) status[c.code] = "taking";
+    });
+  } else if (cur === "taking") {
+    status[course.code] = "passed";
+  } else {
+    status[course.code] = "none";
+  }
+  
+  saveState();
+  render();
+}
+
+function takeAllInTerm(courses, currentActiveSet) {
+  courses.forEach(course => {
+    const cur = status[course.code];
+    if ((cur === "none" || cur === "locked") && !isEffectivelyLocked(course, currentActiveSet)) {
+      status[course.code] = "taking";
+      
+      const coReqs = currentActiveSet.filter(c => c.prereqs.some(p => p.type === "C" && p.code === course.code));
+      coReqs.forEach(c => {
+        if (status[c.code] === "none" && canTake(c, currentActiveSet) && !isLockedByCoReq(c, currentActiveSet)) status[c.code] = "taking";
+      });
+    }
+  });
+  saveState();
+  render();
+}
+
+function passAllInTerm(courses) {
+  courses.forEach(course => {
+    if (status[course.code] === "taking") {
+      status[course.code] = "passed";
+    }
+  });
+  saveState();
+  render();
+}
+
+function openGeModal(lccCode) {
+  currentActiveLccCode = lccCode;
+  document.getElementById("ge-modal-title").textContent = `Assign GE course to ${lccCode}`;
+  
+  const modalList = document.getElementById("ge-modal-list");
+  modalList.innerHTML = "";
+
+  const assignedGeCodes = Object.entries(lccMappings)
+    .filter(([key, val]) => key !== lccCode)
+    .map(([key, val]) => val);
+
+  const availableOptions = LCC_OPTIONS.filter(opt => !assignedGeCodes.includes(opt));
+
+  if (availableOptions.length === 0) {
+    modalList.innerHTML = `<div style="font-size:12px;color:var(--color-text-secondary);text-align:center;padding:12px;">All tracking GE profiles have been assigned!</div>`;
+  } else {
+    availableOptions.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "modal-item";
+      btn.textContent = opt + (lccMappings[lccCode] === opt ? " (Assigned)" : "");
+      btn.addEventListener("click", () => {
+        lccMappings[lccCode] = opt;
+        closeGeModal();
+        saveState();
+        render();
+      });
+      modalList.appendChild(btn);
+    });
+  }
+
+  document.getElementById("ge-modal").classList.add("active");
+}
+
+function closeGeModal() {
+  document.getElementById("ge-modal").classList.remove("active");
+  currentActiveLccCode = null;
+}
+
+document.getElementById("ge-modal-close").addEventListener("click", closeGeModal);
+document.getElementById("ge-modal-unassign").addEventListener("click", () => {
+  if (currentActiveLccCode) {
+    delete lccMappings[currentActiveLccCode];
+    closeGeModal();
+    saveState();
+    render();
+  }
+});
+document.getElementById("ge-modal").addEventListener("click", (e) => {
+  if (e.target.id === "ge-modal") closeGeModal();
+});
+
+// Setup events for the new custom Reset confirmation modal
+document.getElementById("reset-modal-close").addEventListener("click", closeResetModal);
+document.getElementById("reset-modal-cancel").addEventListener("click", closeResetModal);
+document.getElementById("reset-modal-confirm").addEventListener("click", confirmResetTracker);
+document.getElementById("reset-modal").addEventListener("click", (e) => {
+  if (e.target.id === "reset-modal") closeResetModal();
+});
+
+function prereqLabel(prereqs) {
+  if (!prereqs.length) return "";
+  return prereqs.map(p => `${p.type}:${p.code}`).join(" | ");
+}
+
+function render() {
+  // Select active runtime course map depending on active navigation layout
+  let activeCourseSet = (activeTab === "revised") ? computeRearrangedCourses() : JSON.parse(JSON.stringify(INITIAL_COURSES));
+
+  let terms = [...new Set(activeCourseSet.map(c => c.term))].sort((a,b)=>a-b);
+  const totalPassed = INITIAL_COURSES.filter(c => isPassed(c.code) && c.units > 0).reduce((s,c)=>s+c.units,0);
+  const totalUnits = INITIAL_COURSES.filter(c=>c.units>0).reduce((s,c)=>s+c.units,0);
+
+  document.getElementById("stats-pills").innerHTML = `
+    <div class="stat-pill">Passed Units: <span>${totalPassed} / ${totalUnits}</span></div>
+    <div class="stat-pill">Progress: <span>${Math.round((totalPassed/totalUnits)*100) || 0}%</span></div>
+    <div class="stat-pill">Courses Completed: <span>${INITIAL_COURSES.filter(c=>isPassed(c.code)).length} / ${INITIAL_COURSES.length}</span></div>
+  `;
+
+  const container = document.getElementById("terms");
+  container.innerHTML = "";
+
+  if (activeTab === "revised") {
+    terms = terms.filter(t => t >= currentTerm);
+  }
+
+  const yearsMap = {};
+  let totalVisibleCourses = 0;
+
+  terms.forEach(t => {
+    let courses = activeCourseSet.filter(c => c.term === t);
+    
+    if (activeTab === "taking") {
+      courses = courses.filter(c => status[c.code] === "taking");
+    }
+    
+    if (courses.length === 0) return;
+    
+    totalVisibleCourses += courses.length;
+    const academicYearNum = Math.ceil(t / 3);
+
+    if (!yearsMap[academicYearNum]) {
+      yearsMap[academicYearNum] = [];
+    }
+    yearsMap[academicYearNum].push({ termId: t, courses: courses });
+  });
+
+  if (activeTab === "taking" && totalVisibleCourses === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "no-courses-msg";
+    emptyMsg.textContent = "You aren't currently taking any courses. Change a course's status to 'Take' on the other tabs to see it compiled here!";
+    container.appendChild(emptyMsg);
+    return;
+  }
+
+  const uniqueYears = Object.keys(yearsMap).sort((a, b) => a - b);
+
+  uniqueYears.forEach(y => {
+    const yearContainer = document.createElement("div");
+    yearContainer.className = "year-container";
+
+    const yearTitle = document.createElement("div");
+    yearTitle.className = "year-title-banner";
+    yearTitle.textContent = y <= 4 ? `Academic Year ${y}` : `Extended Year ${y - 4}`;
+    yearContainer.appendChild(yearTitle);
+
+    const termsGrid = document.createElement("div");
+    
+    // Inject the center layout class conditionally for Currently Taking and Revised Flowchart tabs
+    if (activeTab === "taking" || activeTab === "revised") {
+      termsGrid.className = "year-terms-grid tabs-center-layout";
+    } else {
+      termsGrid.className = "year-terms-grid";
+    }
+    
+    yearContainer.appendChild(termsGrid);
+    container.appendChild(yearContainer);
+
+    yearsMap[y].forEach(({ termId: t, courses }) => {
+      const earnedUnits = courses.filter(c => status[c.code] === "passed").reduce((s,c)=>s+c.units,0);
+      const maxTermUnits = courses.reduce((s,c) => s + c.units, 0);
+
+      const sec = document.createElement("div");
+      let termBadgeText = "Upcoming";
+      if (t === currentTerm) {
+        sec.className = "term-section is-current-term";
+        termBadgeText = "Current";
+      } else if (t < currentTerm) {
+        sec.className = "term-section is-past-term";
+        termBadgeText = "Past";
+      } else {
+        sec.className = "term-section";
+      }
+
+      const isOverLimit = maxTermUnits > MAX_UNITS_PER_TERM;
+      const unitsClass = isOverLimit ? "term-units warning" : "term-units";
+      
+      const unitsLabelText = (activeTab === "taking")
+        ? `${maxTermUnits}u Selected Loads` 
+        : `Units: ${earnedUnits}/${maxTermUnits} ${isOverLimit ? '⚠️ >21u!' : ''}`;
+
+      const hasAvailable = courses.some(c => status[c.code] !== "passed" && status[c.code] !== "taking" && !isEffectivelyLocked(c, activeCourseSet));
+      const hasTaking = courses.some(c => status[c.code] === "taking");
+
+      sec.innerHTML = `
+        <div class="term-header">
+          <div class="term-title-row">
+            <div>
+              <span class="term-title-text">${getTermLabel(t)} <span class="term-badge">${termBadgeText}</span></span>
+              <div class="${unitsClass}" style="margin-top: 4px;">${unitsLabelText}</div>
+            </div>
+            <div></div>
+            <div>
+              ${(hasAvailable && activeTab !== "taking") ? `<button class="term-action-btn take-all" id="take-all-${t}">Take All Available</button>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="course-grid" id="term-grid-${t}"></div>
+        ${(hasTaking && activeTab !== "taking") ? `
+          <div class="term-footer-actions">
+            <button class="term-action-btn pass-all" id="pass-all-${t}">Mark All as Passed</button>
+          </div>
+        ` : ''}
+      `;
+      termsGrid.appendChild(sec);
+
+      if (hasAvailable && activeTab !== "taking") {
+        document.getElementById(`take-all-${t}`).addEventListener('click', () => takeAllInTerm(courses, activeCourseSet));
+      }
+      if (hasTaking && activeTab !== "taking") {
+        document.getElementById(`pass-all-${t}`).addEventListener('click', () => passAllInTerm(courses));
+      }
+
+      const grid = sec.querySelector(`#term-grid-${t}`);
+      courses.forEach(course => {
+        const st = status[course.code];
+        const locked = isEffectivelyLocked(course, activeCourseSet) && st === "none";
+
+        const isLccNode = course.code.startsWith("LCC");
+        const mapping = lccMappings[course.code] || "";
+        const displayCode = isLccNode && mapping ? `${course.code} (${mapping})` : course.code;
+
+        let rowClass = "course-row";
+        if (st === "passed") rowClass += " passed";
+        else if (st === "taking") rowClass += " taking";
+        else if (locked) rowClass += " locked";
+        if (isLccNode) rowClass += " lcc-card";
+
+        let btnText = "Take", btnClass = "status-btn";
+        if (st === "taking") { btnText = "✓ Pass"; btnClass += " taking-btn"; }
+        else if (st === "passed") { btnText = "✓ Done"; btnClass += " passed-btn"; }
+
+        const prereqStr = prereqLabel(course.prereqs);
+        const unitDisplay = course.units > 0 ? `${course.units}u` : "0u";
+
+        const row = document.createElement("div");
+        row.className = rowClass;
+        row.id = `row-card-${course.code}`;
+        
+        row.innerHTML = `
+          <div class="course-info">
+            <div class="course-code">${displayCode}</div>
+            <div class="course-title-text" title="${course.title}">${course.title}</div>
+            ${prereqStr ? `<div class="course-prereqs">${prereqStr}</div>` : ""}
+          </div>
+          <div class="course-units">${unitDisplay}</div>
+          <div>
+            <button class="${btnClass}" ${locked && st === "none" ? "disabled" : ""} id="btn-${course.code}">${btnText}</button>
+          </div>
+        `;
+        
+        grid.appendChild(row);
+        
+        document.getElementById(`btn-${course.code}`).addEventListener('click', (e) => {
+          e.stopPropagation(); 
+          cycleStatus(course, activeCourseSet);
+        });
+
+        if (isLccNode) {
+          document.getElementById(`row-card-${course.code}`).addEventListener('click', () => {
+            openGeModal(course.code);
+          });
+        }
+      });
+    });
+  });
+}
+
+// Initial Kickstart
+loadSavedData();
+initTheme();
+</script>
+</body>
+</html>
