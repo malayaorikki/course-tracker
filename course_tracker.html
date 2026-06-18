@@ -11,18 +11,24 @@
       --color-background-primary: #ffffff;
       --color-background-secondary: #f8f9fa;
       --color-background-success: #f0fdf4;
+      --color-background-retake: #fef2f2;
       --color-border-tertiary: #e5e7eb;
       --color-border-success: #bbf7d0;
+      --color-border-retake: #fca5a5;
       --color-border-info: #3b82f6;
       --color-text-primary: #111827;
       --color-text-secondary: #4b5563;
       --color-text-tertiary: #9ca3af;
       --color-text-success: #16a34a;
+      --color-text-retake: #b91c1c;
       --color-text-info: #2563eb;
       --color-text-danger: #dc2626;
       --border-radius-md: 6px;
       --color-card-shadow: rgba(0,0,0,0.05);
       --color-prereq-bg: #f3f4f6;
+      --color-seasonal-bg: #fff7ed;
+      --color-seasonal-text: #c2410c;
+      --color-seasonal-border: #ffedd5;
     }
 
     [data-theme="dark"] {
@@ -30,17 +36,23 @@
       --color-background-primary: #111827;
       --color-background-secondary: #1f2937;
       --color-background-success: #062f1d;
+      --color-background-retake: #451a1a;
       --color-border-tertiary: #374151;
       --color-border-success: #166534;
+      --color-border-retake: #7f1d1d;
       --color-border-info: #60a5fa;
       --color-text-primary: #f9fafb;
       --color-text-secondary: #9ca3af;
       --color-text-tertiary: #6b7280;
       --color-text-success: #4ade80;
+      --color-text-retake: #fca5a5;
       --color-text-info: #60a5fa;
       --color-text-danger: #f87171;
       --color-card-shadow: rgba(0, 0, 0, 0.4);
       --color-prereq-bg: #374151;
+      --color-seasonal-bg: #2c1a10;
+      --color-seasonal-text: #f97316;
+      --color-seasonal-border: #431407;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -99,7 +111,6 @@
     .theme-toggle-btn { font-size: 16px; width: 34px; height: 34px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-secondary); color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; transition: background 0.1s, border-color 0.1s; }
     .theme-toggle-btn:hover { background: var(--color-border-tertiary); }
 
-    /* Navigation row container containing tabs and aligned tracker */
     .nav-row {
       display: flex;
       justify-content: space-between;
@@ -109,7 +120,6 @@
       flex-wrap: wrap;
     }
 
-    /* Modern Navigation Tabs (Segmented Control) */
     .tabs-container {
       display: inline-flex;
       background: var(--color-background-secondary);
@@ -184,14 +194,15 @@
     .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
     .legend-dot.passed { background: var(--color-background-success); border: 1px solid var(--color-border-success); }
     .legend-dot.taking { background: var(--color-background-primary); border: 2px solid var(--color-border-info); }
+    .legend-dot.retake { background: var(--color-background-retake); border: 1px solid var(--color-border-retake); }
     .legend-dot.locked { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); opacity: 0.6; }
     .legend-dot.available { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); }
+    .legend-dot.seasonal-dot { background: var(--color-seasonal-bg); border: 1px solid var(--color-seasonal-border); }
     
     .year-container { margin-bottom: 2rem; }
     .year-title-banner { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.75rem; border-bottom: 2px solid var(--color-border-tertiary); padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .year-terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; align-items: start; }
     
-    /* Modified layout style for specific tabs to keep column proportions but centered middle */
     .year-terms-grid.tabs-center-layout {
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       justify-content: center;
@@ -199,24 +210,27 @@
 
     .term-section { display: flex; flex-direction: column; border-radius: 8px; padding: 12px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); transition: background 0.2s; }
     .term-section.is-past-term { opacity: 0.85; }
+    .term-section.is-current-term { }
     
     .term-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--color-border-tertiary); }
-    .term-title-row { display: grid; grid-template-columns: 1fr 60px 100px; align-items: center; gap: 8px; }
+    .term-title-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; }
     
     .term-title-text { font-size: 14px; font-weight: 700; color: var(--color-text-primary); display: inline-flex; align-items: center; gap: 6px; }
     .term-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--color-border-tertiary); color: var(--color-text-secondary); }
-    .term-section.is-current-term .term-badge { background: var(--color-text-info); color: #fff; }
+    .term-badge.current-badge { background: var(--color-text-info); color: #ffffff; }
+    [data-theme="dark"] .term-badge.current-badge { color: #0b0f19; }
     .term-section.is-past-term .term-badge { background: var(--color-text-tertiary); color: var(--color-background-primary); }
     
-    .term-action-btn { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.1s ease; background: var(--color-background-primary); text-align: center; width: 100%; border: 1px solid var(--color-border-tertiary); }
-    .term-action-btn.take-all { border-color: var(--color-border-info); color: var(--color-text-info); }
-    .term-action-btn.take-all:hover { background: var(--color-border-info); color: #fff; }
+    .term-action-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; border: 1px solid transparent; cursor: pointer; background: transparent; color: var(--color-text-tertiary); transition: all 0.1s ease; text-align: center; width: auto; }
+    
+    .term-action-btn.take-all { color: var(--color-text-tertiary); }
+    .term-action-btn.take-all:hover { color: var(--color-text-info); background: #eff6ff; border-color: #bfdbfe; }
+    [data-theme="dark"] .term-action-btn.take-all:hover { background: #1e3a8a; color: #93c5fd; border-color: #1e40af; }
     
     .term-footer-actions { display: flex; justify-content: center; width: 100%; margin-top: 24px; padding-top: 12px; border-top: 1px dashed var(--color-border-tertiary); }
-    .term-action-btn.pass-all { border-color: var(--color-border-success); color: var(--color-text-success); max-width: 150px; }
-    .term-action-btn.pass-all:hover { background: var(--color-border-success); color: #fff; }
-    
-    [data-theme="dark"] .term-action-btn:hover { color: var(--background-primary) !important; }
+    .term-action-btn.pass-all { color: var(--color-text-tertiary); max-width: 150px; }
+    .term-action-btn.pass-all:hover { color: var(--color-text-success); background: #f0fdf4; border-color: #bbf7d0; }
+    [data-theme="dark"] .term-action-btn.pass-all:hover { background: #062f1d; color: #4ade80; border-color: #166534; }
 
     .term-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
     .term-units.warning { color: var(--color-text-danger); font-weight: 700; }
@@ -224,6 +238,7 @@
     .course-grid { display: flex; flex-direction: column; gap: 6px; }
     .course-row { display: grid; grid-template-columns: 1fr 60px 100px; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); transition: all 0.15s ease; }
     .course-row.passed { background: var(--color-background-success); border-color: var(--color-border-success); }
+    .course-row.retake { background: var(--color-background-retake); border-color: var(--color-border-retake); }
     .course-row.locked { background: var(--color-background-secondary); opacity: 0.55; }
     .course-row.taking { border-color: var(--color-border-info); box-shadow: 0 0 0 1px var(--color-border-info); }
     
@@ -231,21 +246,31 @@
     .course-row.lcc-card:hover { border-color: var(--color-border-info); background: var(--color-background-secondary); box-shadow: 0 2px 6px var(--card-shadow); }
     .course-row.lcc-card.passed:hover { background: var(--color-background-success); border-color: var(--text-success); }
     
+    .course-code-wrapper { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .course-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .course-code { font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
     .course-row.passed .course-code { color: var(--color-text-success); }
+    .course-row.retake .course-code { color: var(--color-text-retake); }
     .course-row.locked .course-code { color: var(--color-text-secondary); }
     
+    .seasonal-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: var(--color-seasonal-bg); color: var(--color-seasonal-text); border: 1px solid var(--color-seasonal-border); display: inline-flex; align-items: center; text-transform: uppercase; letter-spacing: 0.2px; }
+
     .course-title-text { font-size: 11px; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .course-prereqs { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; font-family: monospace; background: var(--color-prereq-bg); padding: 1px 4px; border-radius: 3px; width: fit-content; }
     .course-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; text-align: right; padding-right: 4px; white-space: nowrap; }
     
-    .status-btn { font-size: 11px; font-weight: 500; padding: 4px 8px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); text-align: center; width: 100%; transition: background 0.1s; position: relative; z-index: 5; }
+    .status-btn { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); text-align: center; width: 100%; transition: background 0.1s; position: relative; z-index: 5; }
     .status-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
-    .status-btn.passed-btn { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-primary); }
-    .status-btn.taking-btn { border-color: var(--color-border-info); color: var(--color-text-info); background: var(--color-background-primary); }
-    .status-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    .status-btn.passed-btn { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-success); }
+    .status-btn.taking-btn { border-color: var(--color-border-info); color: var(--color-text-info); background: transparent; }
+    .status-btn.retake-btn { border-color: var(--color-border-retake); color: var(--color-text-retake); background: var(--color-background-retake); }
+    .status-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--color-background-secondary); color: var(--color-text-tertiary); border-color: var(--color-border-tertiary); }
     
+    .status-badge-pill { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: var(--border-radius-md); text-align: center; width: 100%; border: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); color: var(--color-text-secondary); display: inline-block; }
+    .status-badge-pill.passed-pill { border-color: var(--color-border-success); color: var(--color-text-success); background: var(--color-background-success); }
+    .status-badge-pill.taking-pill { border-color: var(--color-border-info); color: var(--color-text-info); background: transparent; }
+    .status-badge-pill.retake-pill { border-color: var(--color-border-retake); color: var(--color-text-retake); background: var(--color-background-retake); }
+
     .no-courses-msg { font-size: 13px; color: var(--color-text-secondary); padding: 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 1px dashed var(--color-border-tertiary); text-align: center; margin-top: 1rem; }
 
     .main-footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border-tertiary); display: flex; justify-content: center; }
@@ -263,7 +288,7 @@
     .modal-unassign-btn:hover { text-decoration: underline; }
 
     .modal-footer-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-    .modal-footer-btns .status-btn { width: auto; padding: 6px 14px; }
+    .modal-footer-btns .status-btn { width: auto; padding: 6px 14px; background: var(--color-background-primary); color: var(--color-text-primary); border-color: var(--color-border-tertiary); }
     .modal-footer-btns .btn-danger { background: var(--color-text-danger); color: #fff; border-color: var(--color-text-danger); }
     .modal-footer-btns .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
 
@@ -316,7 +341,7 @@
       <button class="tab-btn" id="tab-revised" onclick="switchTab('revised')">Revised Flowchart</button>
     </nav>
 
-    <div class="control-group">
+    <div class="control-group" id="term-selector-container">
       <span style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary);">Current Term Tracker:</span>
       <div class="select-wrapper" style="position: relative;">
         <select id="current-term-select" class="term-select"></select>
@@ -327,8 +352,10 @@
   <div class="legend" id="legend-container">
     <div class="legend-item"><div class="legend-dot passed"></div>Passed</div>
     <div class="legend-item"><div class="legend-dot taking"></div>Currently taking</div>
+    <div class="legend-item"><div class="legend-dot retake"></div>Retake</div>
     <div class="legend-item"><div class="legend-dot available"></div>Available</div>
     <div class="legend-item"><div class="legend-dot locked"></div>Locked (prereq missing)</div>
+    <div class="legend-item"><div class="legend-dot seasonal-dot"></div>Seasonal Course</div>
   </div>
   
   <div id="terms"></div>
@@ -489,7 +516,7 @@ let ALL_COURSES = [];
 let status = {};
 let lccMappings = {}; 
 let currentTerm = 1; 
-let activeTab = "main"; // "main", "taking", "revised"
+let activeTab = "main"; 
 let currentActiveLccCode = null;
 
 const TERM_NAMES = {
@@ -498,6 +525,17 @@ const TERM_NAMES = {
   7:"Term 7",8:"Term 8",9:"Term 9",
   10:"Term 10",11:"Term 11",12:"Term 12"
 };
+
+const SEASONAL_COURSES = new Set([
+  "COEDISC", "PROLOGI", "LBYCPA1", "LBYEC2B", "LBYCPEI", "DATSRAL", "LBYCPA2", 
+  "DISCRMT", "FUNDCKT", "LBYEC2M", "NUMMETS", "FUNDLEC", "LBYCPC2", "SOFDESG", 
+  "LBYCPD2", "MXSIGFN", "LOGDSGN", "LBYCPG4", "FDCNSYS", "LBYCPC3", "LBYME1C", 
+  "MICPROS", "LBYCPA3", "LBYCPB3", "LBYEC3B", "LBYCPF2", "DIGDACM", "LBYCPG2", 
+  "CSYSARC", "LBYCPD3", "EMBDSYS", "LBYCPM3", "LBYCPG3", "REMETHS", "OPESSYS", 
+  "LBYCPO1", "DSIGPRO", "LBYCPA4", "OCHESAF", "THSCP4A", "CPEPRAC", "CPECOG1", 
+  "LBYCPF3", "EMERTEC", "THSCP4B", "CONETSC", "LBYCPB4", "CPECAPS", "CPECOG2", 
+  "LBYCPH3", "PRCGECP", "THSCP4C", "CPECOG3", "LBYCPC4", "CPETRIP"
+]);
 
 function getTermLabel(t) {
   return TERM_NAMES[t] || `Term ${t}`;
@@ -527,15 +565,20 @@ function switchTab(tabId) {
   activeTab = tabId;
   localStorage.setItem(CURRENT_TAB_KEY, tabId);
   
-  // Highlight tab button
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
   
-  // Adjust helper items
-  if (tabId === 'taking') {
-    document.getElementById("legend-container").style.display = "none";
-  } else {
+  const selectorContainer = document.getElementById("term-selector-container");
+  if (tabId === "main") {
+    selectorContainer.style.display = "flex";
     document.getElementById("legend-container").style.display = "flex";
+  } else {
+    selectorContainer.style.display = "none";
+    if (tabId === 'taking') {
+      document.getElementById("legend-container").style.display = "none";
+    } else {
+      document.getElementById("legend-container").style.display = "flex";
+    }
   }
 
   render();
@@ -593,8 +636,6 @@ function confirmResetTracker() {
   populateTermSelectors();
   switchTab("main");
   closeResetModal();
-  
-  // Smooth scroll back to the top of the main page layout
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -616,7 +657,6 @@ document.getElementById("current-term-select").addEventListener("change", (e) =>
   render();
 });
 
-/* Core Scheduler algorithm calculating shift patterns */
 function computeRearrangedCourses() {
   let workingCourses = JSON.parse(JSON.stringify(INITIAL_COURSES));
   let changesMade = true;
@@ -630,8 +670,20 @@ function computeRearrangedCourses() {
     for (let i = 0; i < workingCourses.length; i++) {
       const course = workingCourses[i];
       if (course.term < currentTerm && status[course.code] !== "passed") {
-        course.term = currentTerm;
-        changesMade = true;
+        const origCourse = INITIAL_COURSES.find(orig => orig.code === course.code);
+        const targetOffset = (origCourse.term - 1) % 3;
+        
+        let newTerm = currentTerm;
+        if (SEASONAL_COURSES.has(course.code)) {
+          while ((newTerm - 1) % 3 !== targetOffset) {
+            newTerm++;
+          }
+        }
+        
+        if (course.term !== newTerm) {
+          course.term = newTerm;
+          changesMade = true;
+        }
       }
     }
 
@@ -642,13 +694,28 @@ function computeRearrangedCourses() {
         if (!pCourse) continue;
 
         if ((pr.type === "H" || pr.type === "S") && course.term <= pCourse.term) {
-          course.term = pCourse.term + 1;
-          changesMade = true;
+          const origCourse = INITIAL_COURSES.find(orig => orig.code === course.code);
+          const targetOffset = (origCourse.term - 1) % 3;
+          
+          let newTerm = pCourse.term + 1;
+          if (SEASONAL_COURSES.has(course.code)) {
+            while ((newTerm - 1) % 3 !== targetOffset) {
+              newTerm++;
+            }
+          }
+          
+          if (course.term !== newTerm) {
+            course.term = newTerm;
+            changesMade = true;
+          }
         }
+        
         if (pr.type === "C" && course.term !== pCourse.term) {
-          const maxTerm = Math.max(course.term, pCourse.term);
-          if (course.term !== maxTerm) { course.term = maxTerm; changesMade = true; }
-          if (pCourse.term !== maxTerm) { pCourse.term = maxTerm; changesMade = true; }
+          if (status[course.code] !== "passed" && status[pCourse.code] !== "passed") {
+            const maxTerm = Math.max(course.term, pCourse.term);
+            if (course.term !== maxTerm) { course.term = maxTerm; changesMade = true; }
+            if (pCourse.term !== maxTerm) { pCourse.term = maxTerm; changesMade = true; }
+          }
         }
       }
     }
@@ -659,8 +726,20 @@ function computeRearrangedCourses() {
       for (let i = 0; i < workingCourses.length; i++) {
         const course = workingCourses[i];
         if (course.code !== "PRCGECP" && course.term === pracTerm) {
-          course.term = pracTerm + 1;
-          changesMade = true;
+          const origCourse = INITIAL_COURSES.find(orig => orig.code === course.code);
+          const targetOffset = (origCourse.term - 1) % 3;
+          
+          let newTerm = pracTerm + 1;
+          if (SEASONAL_COURSES.has(course.code)) {
+            while ((newTerm - 1) % 3 !== targetOffset) {
+              newTerm++;
+            }
+          }
+          
+          if (course.term !== newTerm) {
+            course.term = newTerm;
+            changesMade = true;
+          }
         }
       }
     }
@@ -699,7 +778,18 @@ function computeRearrangedCourses() {
         });
 
         if (candidates.length > 0) {
-          candidates[0].term = t + 1;
+          const courseToPush = candidates[0];
+          const origCourse = INITIAL_COURSES.find(orig => orig.code === courseToPush.code);
+          const targetOffset = (origCourse.term - 1) % 3;
+          
+          let nextValidTerm = t + 1;
+          if (SEASONAL_COURSES.has(courseToPush.code)) {
+            while ((nextValidTerm - 1) % 3 !== targetOffset) {
+              nextValidTerm++;
+            }
+          }
+          
+          courseToPush.term = nextValidTerm;
           changesMade = true;
           break; 
         }
@@ -711,13 +801,22 @@ function computeRearrangedCourses() {
 
 function isPassed(code) { return status[code] === "passed"; }
 function isTaking(code) { return status[code] === "taking"; }
-function isTakenOrPassed(code) { return isPassed(code) || isTaking(code); }
+function isRetake(code) { return status[code] === "retake"; }
+function isTakenOrPassed(code) { return isPassed(code) || isTaking(code) || isRetake(code); }
 
 function canTake(course, currentActiveSet) {
   for (const pr of course.prereqs) {
     if (pr.type === "H" && !isPassed(pr.code)) return false;
-    if (pr.type === "S" && !isTakenOrPassed(pr.code)) return false;
+    if (pr.type === "S" && !(isPassed(pr.code) || isRetake(pr.code))) return false;
   }
+
+  const hardlockedOrSoftlocked = currentActiveSet.some(c => {
+    return c.prereqs.some(p => p.code === course.code && p.type === "S") && 
+           status[c.code] === "taking";
+  });
+
+  if (hardlockedOrSoftlocked) return false;
+
   return true;
 }
 
@@ -749,6 +848,8 @@ function cycleStatus(course, currentActiveSet) {
     });
   } else if (cur === "taking") {
     status[course.code] = "passed";
+  } else if (cur === "passed") {
+    status[course.code] = "retake";
   } else {
     status[course.code] = "none";
   }
@@ -784,6 +885,8 @@ function passAllInTerm(courses) {
 }
 
 function openGeModal(lccCode) {
+  if (activeTab !== "main") return;
+
   currentActiveLccCode = lccCode;
   document.getElementById("ge-modal-title").textContent = `Assign GE course to ${lccCode}`;
   
@@ -834,7 +937,6 @@ document.getElementById("ge-modal").addEventListener("click", (e) => {
   if (e.target.id === "ge-modal") closeGeModal();
 });
 
-// Setup events for the new custom Reset confirmation modal
 document.getElementById("reset-modal-close").addEventListener("click", closeResetModal);
 document.getElementById("reset-modal-cancel").addEventListener("click", closeResetModal);
 document.getElementById("reset-modal-confirm").addEventListener("click", confirmResetTracker);
@@ -848,7 +950,6 @@ function prereqLabel(prereqs) {
 }
 
 function render() {
-  // Select active runtime course map depending on active navigation layout
   let activeCourseSet = (activeTab === "revised") ? computeRearrangedCourses() : JSON.parse(JSON.stringify(INITIAL_COURSES));
 
   let terms = [...new Set(activeCourseSet.map(c => c.term))].sort((a,b)=>a-b);
@@ -874,8 +975,13 @@ function render() {
   terms.forEach(t => {
     let courses = activeCourseSet.filter(c => c.term === t);
     
+    // UPDATED: Now filters both "taking" and "retake" status courses for the Currently Taking tab
     if (activeTab === "taking") {
-      courses = courses.filter(c => status[c.code] === "taking");
+      courses = courses.filter(c => status[c.code] === "taking" || status[c.code] === "retake");
+    }
+
+    if (activeTab === "revised") {
+      courses = courses.filter(c => status[c.code] !== "passed");
     }
     
     if (courses.length === 0) return;
@@ -892,7 +998,7 @@ function render() {
   if (activeTab === "taking" && totalVisibleCourses === 0) {
     const emptyMsg = document.createElement("div");
     emptyMsg.className = "no-courses-msg";
-    emptyMsg.textContent = "You aren't currently taking any courses. Change a course's status to 'Take' on the other tabs to see it compiled here!";
+    emptyMsg.textContent = "You aren't currently taking any courses. Mark a course status as 'Taking' or 'Retake' on the Main Flowchart to see it here!";
     container.appendChild(emptyMsg);
     return;
   }
@@ -910,7 +1016,6 @@ function render() {
 
     const termsGrid = document.createElement("div");
     
-    // Inject the center layout class conditionally for Currently Taking and Revised Flowchart tabs
     if (activeTab === "taking" || activeTab === "revised") {
       termsGrid.className = "year-terms-grid tabs-center-layout";
     } else {
@@ -925,13 +1030,13 @@ function render() {
       const maxTermUnits = courses.reduce((s,c) => s + c.units, 0);
 
       const sec = document.createElement("div");
-      let termBadgeText = "Upcoming";
+      let termBadgeHtml = `<span class="term-badge">Upcoming</span>`;
       if (t === currentTerm) {
         sec.className = "term-section is-current-term";
-        termBadgeText = "Current";
+        termBadgeHtml = `<span class="term-badge current-badge">Current</span>`;
       } else if (t < currentTerm) {
         sec.className = "term-section is-past-term";
-        termBadgeText = "Past";
+        termBadgeHtml = `<span class="term-badge">Past</span>`;
       } else {
         sec.className = "term-section";
       }
@@ -943,24 +1048,26 @@ function render() {
         ? `${maxTermUnits}u Selected Loads` 
         : `Units: ${earnedUnits}/${maxTermUnits} ${isOverLimit ? '⚠️ >21u!' : ''}`;
 
-      const hasAvailable = courses.some(c => status[c.code] !== "passed" && status[c.code] !== "taking" && !isEffectivelyLocked(c, activeCourseSet));
+      const hasAvailable = courses.some(c => status[c.code] !== "passed" && status[c.code] !== "taking" && status[c.code] !== "retake" && !isEffectivelyLocked(c, activeCourseSet));
       const hasTaking = courses.some(c => status[c.code] === "taking");
+      const showTakeAllBtn = (hasAvailable && activeTab === "main");
+      const showPassAllBtn = (hasTaking && activeTab === "main");
 
       sec.innerHTML = `
         <div class="term-header">
           <div class="term-title-row">
             <div>
-              <span class="term-title-text">${getTermLabel(t)} <span class="term-badge">${termBadgeText}</span></span>
+              <span class="term-title-text">${getTermLabel(t)} ${termBadgeHtml}</span>
               <div class="${unitsClass}" style="margin-top: 4px;">${unitsLabelText}</div>
             </div>
             <div></div>
             <div>
-              ${(hasAvailable && activeTab !== "taking") ? `<button class="term-action-btn take-all" id="take-all-${t}">Take All Available</button>` : ''}
+              ${showTakeAllBtn ? `<button class="term-action-btn take-all" id="take-all-${t}">Take All Available</button>` : ''}
             </div>
           </div>
         </div>
         <div class="course-grid" id="term-grid-${t}"></div>
-        ${(hasTaking && activeTab !== "taking") ? `
+        ${showPassAllBtn ? `
           <div class="term-footer-actions">
             <button class="term-action-btn pass-all" id="pass-all-${t}">Mark All as Passed</button>
           </div>
@@ -968,17 +1075,17 @@ function render() {
       `;
       termsGrid.appendChild(sec);
 
-      if (hasAvailable && activeTab !== "taking") {
+      if (showTakeAllBtn) {
         document.getElementById(`take-all-${t}`).addEventListener('click', () => takeAllInTerm(courses, activeCourseSet));
       }
-      if (hasTaking && activeTab !== "taking") {
+      if (showPassAllBtn) {
         document.getElementById(`pass-all-${t}`).addEventListener('click', () => passAllInTerm(courses));
       }
 
       const grid = sec.querySelector(`#term-grid-${t}`);
       courses.forEach(course => {
         const st = status[course.code];
-        const locked = isEffectivelyLocked(course, activeCourseSet) && st === "none";
+        const locked = isEffectivelyLocked(course, activeCourseSet) && (st === "none" || st === "locked");
 
         const isLccNode = course.code.startsWith("LCC");
         const mapping = lccMappings[course.code] || "";
@@ -987,50 +1094,70 @@ function render() {
         let rowClass = "course-row";
         if (st === "passed") rowClass += " passed";
         else if (st === "taking") rowClass += " taking";
+        else if (st === "retake") rowClass += " retake";
         else if (locked) rowClass += " locked";
-        if (isLccNode) rowClass += " lcc-card";
-
-        let btnText = "Take", btnClass = "status-btn";
-        if (st === "taking") { btnText = "✓ Pass"; btnClass += " taking-btn"; }
-        else if (st === "passed") { btnText = "✓ Done"; btnClass += " passed-btn"; }
+        
+        if (isLccNode && activeTab === "main") rowClass += " lcc-card";
 
         const prereqStr = prereqLabel(course.prereqs);
         const unitDisplay = course.units > 0 ? `${course.units}u` : "0u";
+        const isSeasonal = SEASONAL_COURSES.has(course.code);
 
         const row = document.createElement("div");
         row.className = rowClass;
         row.id = `row-card-${course.code}`;
         
+        let actionElementHtml = "";
+        if (activeTab === "main") {
+          let btnText = "Available", btnClass = "status-btn";
+          if (st === "taking") { btnText = "Taking"; btnClass += " taking-btn"; }
+          else if (st === "passed") { btnText = "Passed"; btnClass += " passed-btn"; }
+          else if (st === "retake") { btnText = "Retake"; btnClass += " retake-btn"; }
+          else if (locked) { btnText = "Locked"; }
+          
+          actionElementHtml = `<button class="${btnClass}" ${locked ? "disabled" : ""} id="btn-${course.code}">${btnText}</button>`;
+        } else {
+          if (st === "passed") actionElementHtml = `<span class="status-badge-pill passed-pill">Passed</span>`;
+          else if (st === "taking") actionElementHtml = `<span class="status-badge-pill taking-pill">Taking</span>`;
+          else if (st === "retake") actionElementHtml = `<span class="status-badge-pill retake-pill">Retake</span>`;
+          else if (locked) actionElementHtml = `<span class="status-badge-pill">Locked</span>`;
+          else actionElementHtml = `<span class="status-badge-pill">Available</span>`;
+        }
+        
         row.innerHTML = `
           <div class="course-info">
-            <div class="course-code">${displayCode}</div>
+            <div class="course-code-wrapper">
+              <span class="course-code">${displayCode}</span>
+              ${isSeasonal ? `<span class="seasonal-badge">Seasonal</span>` : ''}
+            </div>
             <div class="course-title-text" title="${course.title}">${course.title}</div>
             ${prereqStr ? `<div class="course-prereqs">${prereqStr}</div>` : ""}
           </div>
           <div class="course-units">${unitDisplay}</div>
           <div>
-            <button class="${btnClass}" ${locked && st === "none" ? "disabled" : ""} id="btn-${course.code}">${btnText}</button>
+            ${actionElementHtml}
           </div>
         `;
         
         grid.appendChild(row);
         
-        document.getElementById(`btn-${course.code}`).addEventListener('click', (e) => {
-          e.stopPropagation(); 
-          cycleStatus(course, activeCourseSet);
-        });
-
-        if (isLccNode) {
-          document.getElementById(`row-card-${course.code}`).addEventListener('click', () => {
-            openGeModal(course.code);
+        if (activeTab === "main") {
+          document.getElementById(`btn-${course.code}`).addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            cycleStatus(course, activeCourseSet);
           });
+
+          if (isLccNode) {
+            document.getElementById(`row-card-${course.code}`).addEventListener('click', () => {
+              openGeModal(course.code);
+            });
+          }
         }
       });
     });
   });
 }
 
-// Initial Kickstart
 loadSavedData();
 initTheme();
 </script>
