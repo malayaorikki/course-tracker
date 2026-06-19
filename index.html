@@ -12,6 +12,7 @@
       --color-background-secondary: #f8f9fa;
       --color-background-success: #f0fdf4;
       --color-background-retake: #fef2f2;
+      --color-background-taking: #eff6ff;
       --color-border-tertiary: #e5e7eb;
       --color-border-success: #bbf7d0;
       --color-border-retake: #fca5a5;
@@ -37,6 +38,7 @@
       --color-background-secondary: #1f2937;
       --color-background-success: #062f1d;
       --color-background-retake: #451a1a;
+      --color-background-taking: #15233a;
       --color-border-tertiary: #374151;
       --color-border-success: #166534;
       --color-border-retake: #7f1d1d;
@@ -56,7 +58,8 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-sans); background: var(--color-body-bg); color: var(--color-text-primary); padding: 2rem 1rem; transition: background 0.2s, color 0.2s; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font-family: var(--font-sans); background: var(--color-body-bg); color: var(--color-text-primary); padding: 2rem 1rem; transition: background 0.2s, color 0.2s; overflow-x: hidden; }
     
     .container { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px var(--color-card-shadow); transition: background 0.2s, box-shadow 0.2s; }
     
@@ -229,36 +232,39 @@
       user-select: none;
     }
 
-    .clear-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; border: 1px solid transparent; cursor: pointer; background: transparent; color: var(--color-text-tertiary); transition: all 0.1s; }
+    .clear-btn { font-size: 12px; font-weight: 600; padding: 6px 14px 6px 10px; border-radius: 20px; border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 6px; }
+    .clear-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
     .clear-btn:hover { color: #b91c1c; background: #fef2f2; border-color: #fca5a5; }
+    .clear-btn:active { transform: scale(0.96); }
+    [data-theme="dark"] .clear-btn { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); }
     [data-theme="dark"] .clear-btn:hover { background: #451a1a; color: #fca5a5; border-color: #7f1d1d; }
 
     .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
     .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
-    .legend-dot.passed { background: var(--color-background-primary); border: 1.5px solid var(--color-border-success); }
-    .legend-dot.taking { background: var(--color-background-primary); border: 2px solid var(--color-border-info); }
-    .legend-dot.retake { background: var(--color-background-primary); border: 1.5px solid var(--color-border-retake); }
+    .legend-dot.passed { background: var(--color-background-success); border: 1.5px solid var(--color-border-success); }
+    .legend-dot.taking { background: var(--color-background-taking); border: 2px solid var(--color-border-info); }
+    .legend-dot.retake { background: var(--color-background-retake); border: 1.5px solid var(--color-border-retake); }
     .legend-dot.locked { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); opacity: 0.6; }
     .legend-dot.available { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); }
     .legend-dot.seasonal-dot { background: var(--color-seasonal-bg); border: 1px solid var(--color-seasonal-border); }
     
     .year-container { margin-bottom: 2rem; }
     .year-title-banner { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.75rem; border-bottom: 2px solid var(--color-border-tertiary); padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .year-terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; align-items: start; }
+    .year-terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
     
-    .term-wrapper { display: flex; flex-direction: column; gap: 0; }
+    .term-wrapper { display: flex; flex-direction: column; gap: 0; min-width: 0; }
     
     .year-terms-grid.tabs-center-layout {
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
       justify-content: center;
     }
 
-    .term-section { display: flex; flex-direction: column; border-radius: 8px; padding: 12px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); transition: background 0.2s; }
+    .term-section { display: flex; flex-direction: column; border-radius: 8px; padding: 12px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); transition: background 0.2s; min-width: 0; }
     .term-section.is-past-term { opacity: 0.85; }
     
     .term-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--color-border-tertiary); }
-    .term-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .term-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     
     .term-title-text { font-size: 14px; font-weight: 700; color: var(--color-text-primary); display: inline-flex; align-items: center; gap: 6px; }
     .term-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--color-border-tertiary); color: var(--color-text-secondary); }
@@ -266,34 +272,38 @@
     [data-theme="dark"] .term-badge.current-badge { color: #0b0f19; }
     .term-section.is-past-term .term-badge { background: var(--color-text-tertiary); color: var(--color-background-primary); }
     
-    .term-action-btn { font-size: 12px; font-weight: 600; padding: 4px 0; border-radius: 0; border: none; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: color 0.15s ease; text-align: right; width: fit-content; min-width: 160px; letter-spacing: 0.1px; flex-shrink: 0; }
+    .term-action-btn { font-size: 11.5px; font-weight: 600; padding: 5px 12px 5px 9px; border-radius: 20px; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s ease; text-align: left; width: fit-content; letter-spacing: 0.1px; flex-shrink: 0; white-space: nowrap; }
+    .term-action-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .term-action-btn:active { transform: scale(0.96); }
 
-    .term-action-btn.enroll-all { color: var(--color-text-tertiary); }
-    .term-action-btn.enroll-all:hover { color: var(--color-text-info); background: transparent; border: none; }
-    [data-theme="dark"] .term-action-btn.enroll-all:hover { color: #93c5fd; background: transparent; border: none; }
+    .term-action-btn.enroll-all { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    .term-action-btn.enroll-all:hover { background: var(--color-text-info); color: #ffffff; border-color: var(--color-text-info); }
+    [data-theme="dark"] .term-action-btn.enroll-all { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    [data-theme="dark"] .term-action-btn.enroll-all:hover { background: #60a5fa; color: #0b0f19; border-color: #60a5fa; }
 
-    .term-action-btn.pass-all { color: var(--color-text-tertiary); }
-    .term-action-btn.pass-all:hover { color: var(--color-text-success); background: transparent; border: none; }
-    [data-theme="dark"] .term-action-btn.pass-all:hover { color: #4ade80; background: transparent; border: none; }
+    .term-action-btn.pass-all { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    .term-action-btn.pass-all:hover { background: var(--color-text-success); color: #ffffff; border-color: var(--color-text-success); }
+    [data-theme="dark"] .term-action-btn.pass-all { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    [data-theme="dark"] .term-action-btn.pass-all:hover { background: #4ade80; color: #0b0f19; border-color: #4ade80; }
 
-    .term-action-btn.reset-term { border-color: transparent; color: var(--color-text-tertiary); background: transparent; }
-    .term-action-btn.reset-term:hover { color: var(--color-text-secondary); border-color: transparent; background: transparent; }
-    [data-theme="dark"] .term-action-btn.reset-term { border-color: transparent; color: var(--color-text-tertiary); background: transparent; }
-    [data-theme="dark"] .term-action-btn.reset-term:hover { color: var(--color-text-secondary); border-color: transparent; background: transparent; }
+    .term-action-btn.reset-term { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    .term-action-btn.reset-term:hover { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+    [data-theme="dark"] .term-action-btn.reset-term { background: var(--color-background-primary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+    [data-theme="dark"] .term-action-btn.reset-term:hover { background: #451a1a; color: #fca5a5; border-color: #7f1d1d; }
 
     .term-units { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
     .term-units.warning { color: var(--color-text-danger); font-weight: 700; }
     
     .course-grid { display: flex; flex-direction: column; gap: 6px; }
-    .course-row { display: grid; grid-template-columns: 1fr 60px 100px; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--border-radius-md); border: 1.5px solid var(--color-border-tertiary); background: var(--color-background-primary); transition: all 0.15s ease; }
-    .course-row.passed { background: var(--color-background-primary); border-color: var(--color-border-success); }
-    .course-row.retake { background: var(--color-background-primary); border-color: var(--color-border-retake); }
+    .course-row { display: grid; grid-template-columns: 1fr 52px 88px; align-items: center; gap: 6px; padding: 8px 10px; border-radius: var(--border-radius-md); border: 1.5px solid var(--color-border-tertiary); background: var(--color-background-primary); transition: all 0.15s ease; min-width: 0; }
+    .course-row.passed { background: var(--color-background-success); border-color: var(--color-border-success); }
+    .course-row.retake { background: var(--color-background-retake); border-color: var(--color-border-retake); }
     .course-row.locked { background: var(--color-background-secondary); opacity: 0.55; }
-    .course-row.taking { border-color: var(--color-border-info); }
+    .course-row.taking { background: var(--color-background-taking); border-color: var(--color-border-info); }
     
     .course-row.lcc-card { cursor: pointer; }
-    .course-row.lcc-card:hover { border-color: var(--color-border-info); background: var(--color-background-secondary); box-shadow: 0 2px 6px var(--card-shadow); }
-    .course-row.lcc-card.passed:hover { background: var(--color-background-secondary); border-color: var(--color-border-success); }
+    .course-row.lcc-card:hover { border-color: var(--color-border-info); background: var(--color-background-taking); box-shadow: 0 2px 6px var(--card-shadow); }
+    .course-row.lcc-card.passed:hover { background: var(--color-background-success); border-color: var(--color-border-success); filter: brightness(0.97); }
     
     .course-code-wrapper { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .course-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -496,9 +506,17 @@
     }
 
     @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      .container {
+        padding: 1rem;
+        border-radius: 0;
+      }
       .main-header {
         flex-direction: column;
         align-items: stretch;
+        gap: 0.75rem;
       }
       .header-utilities {
         justify-content: space-between;
@@ -527,6 +545,109 @@
       }
       .modal-list {
         grid-template-columns: repeat(2, 1fr);
+      }
+      .year-terms-grid,
+      .year-terms-grid.tabs-center-layout {
+        grid-template-columns: 1fr;
+      }
+      .legend {
+        gap: 10px 14px;
+        font-size: 11px;
+      }
+      .stats-container {
+        gap: 4px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem 0;
+      }
+      .container {
+        padding: 0.75rem;
+      }
+      .brand-section h2 {
+        font-size: 18px;
+      }
+      .brand-section .sub-title {
+        font-size: 12px;
+      }
+      .stats-container .stat-pill {
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+      .term-action-btn {
+        font-size: 11px;
+        padding: 6px 10px 6px 8px;
+      }
+      .term-title-row {
+        gap: 6px;
+      }
+      .term-section {
+        padding: 10px;
+      }
+      .course-row {
+        grid-template-columns: 1fr 46px 76px;
+        gap: 4px;
+        padding: 7px 8px;
+      }
+      .course-code {
+        font-size: 11.5px;
+      }
+      .course-title-text {
+        font-size: 10.5px;
+      }
+      .course-units {
+        font-size: 10px;
+        padding-right: 0;
+      }
+      .status-btn,
+      .status-badge-pill {
+        font-size: 9.5px;
+        padding: 0 4px;
+        height: 26px;
+      }
+      .modal-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .modal-item {
+        font-size: 11px;
+        padding: 8px 6px;
+        min-height: 40px;
+      }
+      .modal-card {
+        padding: 1rem;
+      }
+      .fixed-unit-counter {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        width: auto;
+        justify-content: center;
+        font-size: 11.5px;
+      }
+      .clear-btn {
+        font-size: 11px;
+        padding: 6px 12px 6px 9px;
+      }
+      .legend {
+        padding: 6px 10px;
+      }
+      .legend-item {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .course-row {
+        grid-template-columns: 1fr 70px;
+        grid-template-areas: "title status" "units status";
+      }
+      .course-info { grid-area: title; }
+      .course-units { grid-area: units; text-align: left; }
+      .course-row > div:last-child {
+        grid-area: status;
       }
     }
   </style>
@@ -579,7 +700,7 @@
   <div id="terms"></div>
 
   <footer class="main-footer">
-    <button class="clear-btn" id="open-reset-btn">Reset All Data</button>
+    <button class="clear-btn" id="open-reset-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Reset All Data</button>
   </footer>
 </div>
 
@@ -1403,19 +1524,22 @@ function render() {
       const hasActionable = courses.some(c => !isEffectivelyLocked(c, activeCourseSet) || status[c.code] === "passed");
 
       // Single cycling button: Take All → Mark All as Passed → Completed → (resets to Take All)
-      let cycleLabel = null, cycleFn = null, cycleCls = 'enroll-all';
+      let cycleLabel = null, cycleFn = null, cycleCls = 'enroll-all', cycleIcon = '';
+      const iconEnroll = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+      const iconPass = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      const iconReset = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>';
       if (activeTab === "main" && hasActionable) {
         if (hasAvailable) {
-          cycleLabel = 'Take All'; cycleFn = () => enrollAllInTerm(courses, activeCourseSet); cycleCls = 'enroll-all';
+          cycleLabel = 'Take All'; cycleFn = () => enrollAllInTerm(courses, activeCourseSet); cycleCls = 'enroll-all'; cycleIcon = iconEnroll;
         } else if (hasTaking) {
-          cycleLabel = 'Mark All as Passed'; cycleFn = () => passAllInTerm(courses); cycleCls = 'pass-all';
+          cycleLabel = 'Mark All as Passed'; cycleFn = () => passAllInTerm(courses); cycleCls = 'pass-all'; cycleIcon = iconPass;
         } else if (hasPassed) {
-          cycleLabel = 'Reset'; cycleFn = () => unpassAllInTerm(courses); cycleCls = 'reset-term';
+          cycleLabel = 'Reset'; cycleFn = () => unpassAllInTerm(courses); cycleCls = 'reset-term'; cycleIcon = iconReset;
         }
       }
 
       const cycleBtnHtml = cycleLabel
-        ? `<button class="term-action-btn ${cycleCls}" id="cycle-btn-${t}">${cycleLabel}</button>`
+        ? `<button class="term-action-btn ${cycleCls}" id="cycle-btn-${t}">${cycleIcon}${cycleLabel}</button>`
         : '';
 
       sec.innerHTML = `
