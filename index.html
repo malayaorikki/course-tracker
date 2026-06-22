@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DLSU CpE Course Tracker</title>
+  <title>BS-CpE Course Tracker</title>
   <style>
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -15,7 +15,7 @@
       --color-background-retake: #fef2f2;
       --color-background-taking: #eff6ff;
       --color-border-tertiary: #e5e7eb;
-      --color-border-success: #bbf7d0;
+      --color-border-success: #4ade80;
       --color-border-retake: #fca5a5;
       --color-border-info: #3b82f6;
       --color-text-primary: #111827;
@@ -294,12 +294,12 @@
     .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
     .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
-    .legend-dot.passed { background: var(--color-background-success); border: 1.5px solid var(--color-border-success); }
+    .legend-dot.passed { background: var(--color-background-success); border: 2px solid var(--color-border-success); }
     .legend-dot.taking { background: var(--color-background-taking); border: 2px solid var(--color-border-info); }
-    .legend-dot.retake { background: var(--color-background-retake); border: 1.5px solid var(--color-border-retake); }
-    .legend-dot.locked { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); opacity: 0.6; }
-    .legend-dot.available { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); }
-    .legend-dot.seasonal-dot { background: var(--color-seasonal-bg); border: 1px solid var(--color-seasonal-border); }
+    .legend-dot.retake { background: var(--color-background-retake); border: 2px solid var(--color-border-retake); }
+    .legend-dot.locked { background: var(--color-background-secondary); border: 2px solid var(--color-border-tertiary); opacity: 0.6; }
+    .legend-dot.available { background: var(--color-background-primary); border: 2px solid var(--color-border-tertiary); }
+    .legend-dot.seasonal-dot { background: var(--color-seasonal-bg); border: 2px solid var(--color-seasonal-border); }
     
     .year-container { margin-bottom: 2rem; }
     .year-title-banner {
@@ -728,8 +728,8 @@
 <div class="container">
   <header class="main-header">
     <div class="brand-section">
-      <h2>BS Computer Engineering</h2>
-      <p class="sub-title">Flowchart Course Tracker & Rearranger</p>
+      <h2>BS-CpE Course Tracker</h2>
+      <p class="sub-title">Your Personal Course Planner and Progress Tracker</p>
     </div>
     
     <div class="header-utilities">
@@ -768,10 +768,10 @@
   </div>
   
   <div class="legend" id="legend-container">
-    <div class="legend-item"><div class="legend-dot passed"></div>Passed</div>
-    <div class="legend-item"><div class="legend-dot taking"></div>Currently taking</div>
-    <div class="legend-item"><div class="legend-dot retake"></div>Retake</div>
     <div class="legend-item"><div class="legend-dot available"></div>Available</div>
+    <div class="legend-item"><div class="legend-dot taking"></div>Taking</div>
+    <div class="legend-item"><div class="legend-dot passed"></div>Passed</div>
+    <div class="legend-item"><div class="legend-dot retake"></div>Retake</div>
     <div class="legend-item"><div class="legend-dot locked"></div>Locked</div>
   </div>
   
