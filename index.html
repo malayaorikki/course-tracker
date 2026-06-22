@@ -232,6 +232,57 @@
       user-select: none;
     }
 
+    /* Push Non-Taking Toggle */
+    .push-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 13px 6px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--color-border-tertiary);
+      cursor: pointer;
+      background: var(--color-background-primary);
+      color: var(--color-text-secondary);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .push-toggle-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .push-toggle-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-text-info); }
+    .push-toggle-btn.active {
+      background: var(--color-background-taking);
+      border-color: var(--color-border-info);
+      color: var(--color-text-info);
+    }
+    [data-theme="dark"] .push-toggle-btn.active {
+      background: #15233a;
+      border-color: #60a5fa;
+      color: #60a5fa;
+    }
+    .push-toggle-btn .toggle-track {
+      width: 26px; height: 14px;
+      border-radius: 7px;
+      background: var(--color-border-tertiary);
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .push-toggle-btn.active .toggle-track {
+      background: var(--color-border-info);
+    }
+    [data-theme="dark"] .push-toggle-btn.active .toggle-track { background: #60a5fa; }
+    .push-toggle-btn .toggle-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .push-toggle-btn.active .toggle-thumb { transform: translateX(12px); }
+
     .clear-btn { font-size: 12px; font-weight: 600; padding: 6px 14px 6px 10px; border-radius: 20px; border: 1px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 6px; }
     .clear-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
     .clear-btn:hover { color: #b91c1c; background: #fef2f2; border-color: #fca5a5; }
@@ -250,8 +301,27 @@
     .legend-dot.seasonal-dot { background: var(--color-seasonal-bg); border: 1px solid var(--color-seasonal-border); }
     
     .year-container { margin-bottom: 2rem; }
-    .year-title-banner { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.75rem; border-bottom: 2px solid var(--color-border-tertiary); padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .year-title-banner {
+      font-size: 16px; font-weight: 700; color: var(--color-text-primary);
+      margin-bottom: 0.75rem; border-bottom: 2px solid var(--color-border-tertiary);
+      padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .year-title-banner:hover { color: var(--color-text-info); border-color: var(--color-border-info); }
+    .year-collapse-icon {
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: var(--color-text-tertiary);
+      transition: transform 0.25s ease;
+    }
+    .year-title-banner:hover .year-collapse-icon { color: var(--color-text-info); }
+    .year-title-banner.collapsed .year-collapse-icon { transform: rotate(-90deg); }
+    .year-terms-grid {
+      overflow: hidden;
+      transition: opacity 0.2s ease;
+    }
     .year-terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
+    .year-terms-grid.year-hidden { display: none; }
     
     .term-wrapper { display: flex; flex-direction: column; gap: 0; min-width: 0; }
     
@@ -620,11 +690,11 @@
         padding: 1rem;
       }
       .fixed-unit-counter {
-        left: 0.5rem;
-        right: 0.5rem;
+        left: 50%;
+        transform: translateX(-50%);
         bottom: 0.5rem;
         width: auto;
-        justify-content: center;
+        white-space: nowrap;
         font-size: 11.5px;
       }
       .clear-btn {
@@ -673,6 +743,13 @@
       <button class="tab-btn" id="tab-revised" onclick="switchTab('revised')">Revised Flowchart</button>
       <button class="tab-btn" id="tab-taking" onclick="switchTab('taking')">Currently Taking</button>
     </nav>
+
+    <div class="control-group" id="push-toggle-container" style="display:none;">
+      <button class="push-toggle-btn" id="push-toggle-btn" title="Move unenrolled courses in the current term to the next available term">
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        Move Unenrolled Courses
+      </button>
+    </div>
 
     <div class="control-group" id="term-selector-container">
       <span class="term-label">Current Term:</span>
@@ -873,6 +950,8 @@ const THEME_KEY = "cpe_tracker_theme";
 const LCC_MAPPING_KEY = "cpe_tracker_lcc_mappings";
 const CURRENT_TERM_KEY = "cpe_tracker_current_term";
 const CURRENT_TAB_KEY = "cpe_tracker_current_tab";
+const PUSH_NON_TAKING_KEY = "cpe_tracker_push_non_taking";
+const COLLAPSED_YEARS_KEY = "cpe_tracker_collapsed_years";
 const MAX_UNITS_PER_TERM = 21;
 
 let ALL_COURSES = [];
@@ -881,7 +960,9 @@ let lccMappings = {};
 let currentTerm = 1; 
 let activeTab = "main"; 
 let currentActiveLccCode = null;
-let lastUnitsCount = 0; 
+let lastUnitsCount = 0;
+let pushNonTaking = false;
+let collapsedYears = new Set(); 
 
 const TERM_NAMES = {
   1:"Term 1",2:"Term 2",3:"Term 3",
@@ -933,11 +1014,15 @@ function switchTab(tabId) {
   document.getElementById(`tab-${tabId}`).classList.add('active');
   
   const selectorContainer = document.getElementById("term-selector-container");
+  const pushContainer = document.getElementById("push-toggle-container");
+
   if (tabId === "main") {
     selectorContainer.style.display = "flex";
+    pushContainer.style.display = "none";
     document.getElementById("legend-container").style.display = "flex";
   } else {
     selectorContainer.style.display = "none";
+    pushContainer.style.display = tabId === "revised" ? "flex" : "none";
     if (tabId === 'taking') {
       document.getElementById("legend-container").style.display = "none";
     } else {
@@ -945,7 +1030,18 @@ function switchTab(tabId) {
     }
   }
 
+  syncPushToggleBtn();
   render();
+}
+
+function syncPushToggleBtn() {
+  const btn = document.getElementById("push-toggle-btn");
+  if (!btn) return;
+  if (pushNonTaking) {
+    btn.classList.add("active");
+  } else {
+    btn.classList.remove("active");
+  }
 }
 
 function loadSavedData() {
@@ -967,6 +1063,11 @@ function loadSavedData() {
   if (savedMappings) { try { lccMappings = JSON.parse(savedMappings); } catch(e) { lccMappings = {}; } } else { lccMappings = {}; }
   if (savedTerm) { currentTerm = parseInt(savedTerm, 10) || 1; } else { currentTerm = 1; }
   if (savedTab) { activeTab = savedTab; }
+  pushNonTaking = localStorage.getItem(PUSH_NON_TAKING_KEY) === "true";
+  try {
+    const savedCollapsed = localStorage.getItem(COLLAPSED_YEARS_KEY);
+    collapsedYears = savedCollapsed ? new Set(JSON.parse(savedCollapsed)) : new Set();
+  } catch(e) { collapsedYears = new Set(); }
 
   populateTermSelectors();
   switchTab(activeTab);
@@ -981,6 +1082,8 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(status));
   localStorage.setItem(LCC_MAPPING_KEY, JSON.stringify(lccMappings));
   localStorage.setItem(CURRENT_TERM_KEY, currentTerm.toString());
+  localStorage.setItem(PUSH_NON_TAKING_KEY, pushNonTaking.toString());
+  localStorage.setItem(COLLAPSED_YEARS_KEY, JSON.stringify([...collapsedYears]));
 }
 
 function openResetModal() {
@@ -1001,6 +1104,8 @@ function confirmResetTracker() {
   lccMappings = {};
   currentTerm = 1;
   activeTab = "main";
+  pushNonTaking = false;
+  collapsedYears = new Set();
   saveState();
   populateTermSelectors();
   switchTab("main");
@@ -1194,6 +1299,65 @@ function computeRearrangedCourses() {
       }
     }
   }
+  // Push non-taking courses forward if toggle is enabled
+  if (pushNonTaking) {
+    let pushChanges = true;
+    let pushIter = 0;
+    while (pushChanges && pushIter < 500) {
+      pushChanges = false;
+      pushIter++;
+      for (let i = 0; i < workingCourses.length; i++) {
+        const course = workingCourses[i];
+        const st = status[course.code];
+        // Only push courses in the current term that are not taking/retake/passed
+        if (course.term === currentTerm && st !== "taking" && st !== "retake" && st !== "passed") {
+          const origCourse = INITIAL_COURSES.find(orig => orig.code === course.code);
+          const targetOffset = (origCourse.term - 1) % 3;
+          let newTerm = currentTerm + 1;
+          if (SEASONAL_COURSES.has(course.code)) {
+            while ((newTerm - 1) % 3 !== targetOffset) { newTerm++; }
+          }
+          if (course.term !== newTerm) {
+            course.term = newTerm;
+            pushChanges = true;
+          }
+        }
+      }
+      // Re-run prerequisite cascade after pushing
+      if (pushChanges) {
+        let cascadeChanged = true;
+        let cascadeIter = 0;
+        while (cascadeChanged && cascadeIter < 200) {
+          cascadeChanged = false;
+          cascadeIter++;
+          for (let i = 0; i < workingCourses.length; i++) {
+            const course = workingCourses[i];
+            for (const pr of course.prereqs) {
+              const pCourse = workingCourses.find(c => c.code === pr.code);
+              if (!pCourse) continue;
+              if ((pr.type === "H" || pr.type === "S") && course.term <= pCourse.term) {
+                const origCourse = INITIAL_COURSES.find(orig => orig.code === course.code);
+                const targetOffset = (origCourse.term - 1) % 3;
+                let newTerm = pCourse.term + 1;
+                if (SEASONAL_COURSES.has(course.code)) {
+                  while ((newTerm - 1) % 3 !== targetOffset) { newTerm++; }
+                }
+                if (course.term !== newTerm) { course.term = newTerm; cascadeChanged = true; }
+              }
+              if (pr.type === "C" && course.term !== pCourse.term) {
+                if (status[course.code] !== "passed" && status[pCourse.code] !== "passed") {
+                  const maxTerm = Math.max(course.term, pCourse.term);
+                  if (course.term !== maxTerm) { course.term = maxTerm; cascadeChanged = true; }
+                  if (pCourse.term !== maxTerm) { pCourse.term = maxTerm; cascadeChanged = true; }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   return workingCourses;
 }
 
@@ -1381,6 +1545,13 @@ document.getElementById("ge-modal").addEventListener("click", (e) => {
   if (e.target.id === "ge-modal") closeGeModal();
 });
 
+document.getElementById("push-toggle-btn").addEventListener("click", () => {
+  pushNonTaking = !pushNonTaking;
+  syncPushToggleBtn();
+  saveState();
+  render();
+});
+
 document.getElementById("open-reset-btn").addEventListener("click", openResetModal);
 document.getElementById("reset-modal-close").addEventListener("click", closeResetModal);
 document.getElementById("reset-modal-cancel").addEventListener("click", closeResetModal);
@@ -1479,18 +1650,36 @@ function render() {
     const yearContainer = document.createElement("div");
     yearContainer.className = "year-container";
 
+    const isCollapsed = collapsedYears.has(String(y));
+    const yearLabel = y <= 4 ? `Academic Year ${y}` : `Extended Year ${y - 4}`;
+    const chevronSvg = `<svg class="year-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
     const yearTitle = document.createElement("div");
-    yearTitle.className = "year-title-banner";
-    yearTitle.textContent = y <= 4 ? `Academic Year ${y}` : `Extended Year ${y - 4}`;
+    yearTitle.className = "year-title-banner" + (isCollapsed ? " collapsed" : "");
+    yearTitle.innerHTML = `<span>${yearLabel}</span>${chevronSvg}`;
     yearContainer.appendChild(yearTitle);
 
     const termsGrid = document.createElement("div");
     
     if (activeTab === "taking" || activeTab === "revised") {
-      termsGrid.className = "year-terms-grid tabs-center-layout";
+      termsGrid.className = "year-terms-grid tabs-center-layout" + (isCollapsed ? " year-hidden" : "");
     } else {
-      termsGrid.className = "year-terms-grid";
+      termsGrid.className = "year-terms-grid" + (isCollapsed ? " year-hidden" : "");
     }
+
+    yearTitle.addEventListener("click", () => {
+      const key = String(y);
+      if (collapsedYears.has(key)) {
+        collapsedYears.delete(key);
+        yearTitle.classList.remove("collapsed");
+        termsGrid.classList.remove("year-hidden");
+      } else {
+        collapsedYears.add(key);
+        yearTitle.classList.add("collapsed");
+        termsGrid.classList.add("year-hidden");
+      }
+      saveState();
+    });
     
     yearContainer.appendChild(termsGrid);
     container.appendChild(yearContainer);
