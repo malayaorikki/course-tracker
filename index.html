@@ -1593,9 +1593,6 @@ function render() {
     fixedCounter.classList.remove("warning");
   }
 
-  if (totalTakingUnits > 21 && lastUnitsCount <= 21) {
-    document.getElementById("warning-modal").classList.add("active");
-  }
   lastUnitsCount = totalTakingUnits;
 
   document.getElementById("stats-pills").innerHTML = `
@@ -1700,12 +1697,9 @@ function render() {
         sec.className = "term-section";
       }
 
-      const isOverLimit = maxTermUnits > MAX_UNITS_PER_TERM;
-      const unitsClass = isOverLimit ? "term-units warning" : "term-units";
-      
       const unitsLabelText = (activeTab === "taking")
         ? `${maxTermUnits}u Current Load` 
-        : `Units: ${earnedUnits}/${maxTermUnits} ${isOverLimit ? '⚠️ >21u!' : ''}`;
+        : `Units: ${earnedUnits}/${maxTermUnits}`;
 
       const hasAvailable = courses.some(c => status[c.code] !== "passed" && status[c.code] !== "taking" && status[c.code] !== "retake" && !isEffectivelyLocked(c, activeCourseSet));
       const hasTaking = courses.some(c => status[c.code] === "taking" || status[c.code] === "retake");
@@ -1736,7 +1730,7 @@ function render() {
           <div class="term-title-row">
             <div>
               <span class="term-title-text">${getTermLabel(t)} ${termBadgeHtml}</span>
-              <div class="${unitsClass}" style="margin-top: 4px;">${unitsLabelText}</div>
+              <div class="term-units" style="margin-top: 4px;">${unitsLabelText}</div>
             </div>
             ${cycleBtnHtml}
           </div>
