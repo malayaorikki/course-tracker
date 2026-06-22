@@ -1358,6 +1358,83 @@ function computeRearrangedCourses() {
     }
   }
 
+  // After all pushes, enforce unit cap on final arrangement
+  let capChanges = true;
+  let capIter = 0;
+  while (capChanges && capIter < 500) {
+    capChanges = false;
+    capIter++;
+
+    const termList = [...new Set(workingCourses.map(c => c.term))].sort((a, b) => a - b);
+    for (const t of termList) {
+      if (t < currentTerm) continue;
+
+      const termCourses = workingCourses.filter(c => c.term === t);
+      const totalUnits = termCourses.reduce((sum, c) => sum + c.units, 0);
+
+      if (totalUnits > MAX_UNITS_PER_TERM) {
+        const blockingPrereqs = new Set();
+        termCourses.forEach(c => {
+          c.prereqs.forEach(p => {
+            if (termCourses.some(tc => tc.code === p.code)) blockingPrereqs.add(p.code);
+          });
+        });
+
+        const candidates = termCourses.filter(c => status[c.code] !== "passed");
+        candidates.sort((a, b) => {
+          const aIsPrereq = blockingPrereqs.has(a.code) ? 1 : 0;
+          const bIsPrereq = blockingPrereqs.has(b.code) ? 1 : 0;
+          if (aIsPrereq !== bIsPrereq) return aIsPrereq - bIsPrereq;
+          const aOrig = INITIAL_COURSES.find(o => o.code === a.code).term;
+          const bOrig = INITIAL_COURSES.find(o => o.code === b.code).term;
+          if (aOrig !== bOrig) return bOrig - aOrig;
+          return b.units - a.units;
+        });
+
+        if (candidates.length > 0) {
+          const courseToPush = candidates[0];
+          const origCourse = INITIAL_COURSES.find(o => o.code === courseToPush.code);
+          const targetOffset = (origCourse.term - 1) % 3;
+          let nextValidTerm = t + 1;
+          if (SEASONAL_COURSES.has(courseToPush.code)) {
+            while ((nextValidTerm - 1) % 3 !== targetOffset) nextValidTerm++;
+          }
+          courseToPush.term = nextValidTerm;
+          capChanges = true;
+
+          // Cascade prereqs after each push
+          let cascadeChanged = true;
+          while (cascadeChanged) {
+            cascadeChanged = false;
+            for (const course of workingCourses) {
+              for (const pr of course.prereqs) {
+                const pCourse = workingCourses.find(c => c.code === pr.code);
+                if (!pCourse) continue;
+                if ((pr.type === "H" || pr.type === "S") && course.term <= pCourse.term) {
+                  const orig = INITIAL_COURSES.find(o => o.code === course.code);
+                  const offset = (orig.term - 1) % 3;
+                  let nt = pCourse.term + 1;
+                  if (SEASONAL_COURSES.has(course.code)) {
+                    while ((nt - 1) % 3 !== offset) nt++;
+                  }
+                  if (course.term !== nt) { course.term = nt; cascadeChanged = true; }
+                }
+                if (pr.type === "C" && course.term !== pCourse.term) {
+                  if (status[course.code] !== "passed" && status[pCourse.code] !== "passed") {
+                    const maxT = Math.max(course.term, pCourse.term);
+                    if (course.term !== maxT) { course.term = maxT; cascadeChanged = true; }
+                    if (pCourse.term !== maxT) { pCourse.term = maxT; cascadeChanged = true; }
+                  }
+                }
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
   return workingCourses;
 }
 
